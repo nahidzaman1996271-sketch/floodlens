@@ -1,0 +1,269 @@
+{
+  "locality_name": "Char Bandar Union (synthetic, haor-floodplain profile)",
+  "current_gauge_level_m": 5.08,
+  "danger_level_m": 6.5,
+  "severe_level_m": 8.0,
+  "hours_to_danger_level": 6.0,
+  "hours_to_severe_level": 13.0,
+  "confidence_band_m": 0.2,
+  "impact_summary": {
+    "total_buildings": 102,
+    "buildings_at_risk": 91,
+    "buildings_at_risk_pct": 89.2,
+    "buildings_critical_lt_10h": 89,
+    "medical_facilities_at_risk": 1,
+    "roads_inaccessible": 2,
+    "roads_at_risk": 1,
+    "total_roads": 3
+  },
+  "roads": [
+    {
+      "id": "R1",
+      "name": "Village Access Road 1",
+      "hours_to_inaccessible": 1,
+      "status": "INACCESSIBLE"
+    },
+    {
+      "id": "R2",
+      "name": "Village Access Road 2",
+      "hours_to_inaccessible": 1,
+      "status": "INACCESSIBLE"
+    },
+    {
+      "id": "R3",
+      "name": "Upazila Connector Road (high ground)",
+      "hours_to_inaccessible": 13,
+      "status": "AT_RISK"
+    }
+  ],
+  "top_critical_buildings": [
+    {
+      "id": "B0002",
+      "type": "household",
+      "row": 1,
+      "col": 6,
+      "elevation_m": 0.97,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 2.07,
+      "priority": "standard"
+    },
+    {
+      "id": "B0003",
+      "type": "household",
+      "row": 2,
+      "col": 3,
+      "elevation_m": 1.86,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 2.2,
+      "priority": "standard"
+    },
+    {
+      "id": "B0004",
+      "type": "household",
+      "row": 2,
+      "col": 15,
+      "elevation_m": 0.69,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.63,
+      "priority": "standard"
+    },
+    {
+      "id": "B0005",
+      "type": "household",
+      "row": 2,
+      "col": 17,
+      "elevation_m": 1.36,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.54,
+      "priority": "standard"
+    },
+    {
+      "id": "B0006",
+      "type": "household",
+      "row": 3,
+      "col": 2,
+      "elevation_m": 2.22,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 2.23,
+      "priority": "standard"
+    },
+    {
+      "id": "B0007",
+      "type": "household",
+      "row": 3,
+      "col": 15,
+      "elevation_m": 0.46,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.62,
+      "priority": "standard"
+    },
+    {
+      "id": "B0010",
+      "type": "household",
+      "row": 4,
+      "col": 15,
+      "elevation_m": 0.59,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.6,
+      "priority": "standard"
+    },
+    {
+      "id": "B0011",
+      "type": "household",
+      "row": 4,
+      "col": 16,
+      "elevation_m": 0.83,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.55,
+      "priority": "standard"
+    },
+    {
+      "id": "B0012",
+      "type": "household",
+      "row": 5,
+      "col": 4,
+      "elevation_m": 2.0,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 2.11,
+      "priority": "standard"
+    },
+    {
+      "id": "B0013",
+      "type": "household",
+      "row": 5,
+      "col": 15,
+      "elevation_m": 0.26,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.58,
+      "priority": "standard"
+    },
+    {
+      "id": "B0014",
+      "type": "market_stall",
+      "row": 5,
+      "col": 20,
+      "elevation_m": 1.7,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.35,
+      "priority": "standard"
+    },
+    {
+      "id": "B0015",
+      "type": "household",
+      "row": 6,
+      "col": 17,
+      "elevation_m": 0.66,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.47,
+      "priority": "standard"
+    },
+    {
+      "id": "B0018",
+      "type": "household",
+      "row": 9,
+      "col": 8,
+      "elevation_m": 1.31,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.87,
+      "priority": "standard"
+    },
+    {
+      "id": "B0019",
+      "type": "household",
+      "row": 9,
+      "col": 9,
+      "elevation_m": 1.06,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.82,
+      "priority": "standard"
+    },
+    {
+      "id": "B0020",
+      "type": "household",
+      "row": 11,
+      "col": 9,
+      "elevation_m": 0.8,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 1.81,
+      "priority": "standard"
+    }
+  ],
+  "sample_alerts": [
+    {
+      "building_id": "B0002",
+      "risk_level": "CRITICAL",
+      "message": "Move now: flooding predicted here in approximately 1 hours (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.07 km away). Take essential documents, medicine, and water. Move livestock to higher ground if time allows.",
+      "source": "template_fallback"
+    },
+    {
+      "building_id": "B0003",
+      "risk_level": "CRITICAL",
+      "message": "Move now: flooding predicted here in approximately 1 hours (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.2 km away). Take essential documents, medicine, and water. Move livestock to higher ground if time allows.",
+      "source": "template_fallback"
+    },
+    {
+      "building_id": "B0004",
+      "risk_level": "CRITICAL",
+      "message": "Move now: flooding predicted here in approximately 1 hours (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.63 km away). Take essential documents, medicine, and water. Move livestock to higher ground if time allows.",
+      "source": "template_fallback"
+    },
+    {
+      "building_id": "B0005",
+      "risk_level": "CRITICAL",
+      "message": "Move now: flooding predicted here in approximately 1 hours (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.54 km away). Take essential documents, medicine, and water. Move livestock to higher ground if time allows.",
+      "source": "template_fallback"
+    },
+    {
+      "building_id": "B0006",
+      "risk_level": "CRITICAL",
+      "message": "Move now: flooding predicted here in approximately 1 hours (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.23 km away). Take essential documents, medicine, and water. Move livestock to higher ground if time allows.",
+      "source": "template_fallback"
+    }
+  ],
+  "data_provenance": "Synthetic scenario: DEM, river gauge history, rainfall forecast, buildings, roads and shelters are generated to be hydrologically and demographically plausible for a Bangladeshi riverine/haor floodplain locality, calibrated to public BWDB-style gauge behavior and open-data-style terrain patterns -- they are NOT real observations. Forecasting model: damped-trend exponential smoothing (Holt's method) with a rainfall-coupling term, adapted from the time-to-failure modeling approach used in the Cluster Heartbeat project. Flood propagation: hydrologically-connected elevation flood-fill (BFS from river channel), not a full hydrodynamic model."
+}

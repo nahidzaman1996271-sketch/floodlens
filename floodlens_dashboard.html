@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FloodLens — Live Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1D2A;
+    --panel:#0F2436;
+    --panel-2:#12283A;
+    --line:#1F3B50;
+    --river:#2E7DA6;
+    --river-bright:#4FA9DB;
+    --critical:#D64545;
+    --high:#E0954B;
+    --watch:#D9B34F;
+    --safe:#4FA381;
+    --text:#EAF0F2;
+    --muted:#7C93A3;
+    --muted-2:#4E677A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .num{font-family:'Space Grotesk',sans-serif; font-variant-numeric:tabular-nums;}
+
+  /* ---- top bar ---- */
+  header{
+    border-bottom:1px solid var(--line);
+    padding:18px 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:16px;
+    background:linear-gradient(180deg, rgba(46,125,166,0.08), transparent);
+  }
+  .brand{display:flex; align-items:baseline; gap:12px;}
+  .brand h1{font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:600; letter-spacing:0.2px;}
+  .brand .locality{color:var(--muted); font-size:14px;}
+  .status-pill{
+    display:flex; align-items:center; gap:8px;
+    font-size:12.5px; color:var(--muted);
+    border:1px solid var(--line);
+    padding:5px 12px 5px 10px;
+    border-radius:100px;
+  }
+  .dot{width:7px; height:7px; border-radius:50%; background:var(--muted-2);}
+  .dot.live{background:var(--safe); box-shadow:0 0 0 0 rgba(79,163,129,0.6); animation:pulse 2s infinite;}
+  .dot.down{background:var(--critical);}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(79,163,129,0.5);}
+    70%{box-shadow:0 0 0 7px rgba(79,163,129,0);}
+    100%{box-shadow:0 0 0 0 rgba(79,163,129,0);}
+  }
+  .gauge-block{display:flex; align-items:center; gap:20px;}
+  .gauge-num{text-align:right;}
+  .gauge-num .val{font-size:28px; font-weight:600;}
+  .gauge-num .lbl{font-size:11px; color:var(--muted); letter-spacing:0.3px;}
+  .gauge-bar{width:180px;}
+  .gauge-track{
+    position:relative; height:8px; border-radius:4px;
+    background:var(--panel-2); border:1px solid var(--line); overflow:visible;
+  }
+  .gauge-fill{position:absolute; left:0; top:0; height:100%; border-radius:4px; background:var(--river-bright); transition:width .6s ease;}
+  .gauge-marks{display:flex; justify-content:space-between; font-size:9.5px; color:var(--muted-2); margin-top:5px;}
+
+  .config{display:flex; align-items:center; gap:8px;}
+  .config input{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    font-size:12px; padding:6px 9px; border-radius:6px; width:190px; font-family:'Inter';
+  }
+  .config button{
+    background:var(--river); border:none; color:#fff; font-size:12px; font-weight:500;
+    padding:7px 12px; border-radius:6px; cursor:pointer;
+  }
+  .config button:hover{background:var(--river-bright);}
+
+  /* ---- layout ---- */
+  main{
+    display:grid;
+    grid-template-columns:1fr 380px;
+    gap:1px;
+    background:var(--line);
+  }
+  @media (max-width:900px){ main{grid-template-columns:1fr;} }
+
+  .col-left, .col-right{background:var(--bg);}
+  section{padding:22px 26px; border-bottom:1px solid var(--line);}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px;}
+  .section-head h2{font-family:'Space Grotesk'; font-size:14px; font-weight:600; letter-spacing:0.2px;}
+  .section-head .sub{font-size:11.5px; color:var(--muted-2);}
+
+  /* ---- map ---- */
+  .map-wrap{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px;
+  }
+  #floodCanvas{width:100%; display:block; border-radius:4px; background:#08151F;}
+  .scrub{display:flex; align-items:center; gap:14px; margin-top:16px;}
+  .scrub button{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    width:34px; height:34px; border-radius:6px; cursor:pointer; font-size:14px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .scrub button:hover{border-color:var(--river);}
+  .scrub input[type=range]{flex:1; accent-color:var(--river-bright);}
+  .scrub-readout{font-size:12.5px; color:var(--muted); min-width:150px; text-align:right;}
+  .scrub-readout .num{color:var(--text); font-size:14px;}
+  .legend{display:flex; gap:18px; margin-top:12px; font-size:11px; color:var(--muted);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .swatch{width:10px; height:10px; border-radius:2px;}
+
+  /* ---- KPI grid ---- */
+  .kpi-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .kpi{background:var(--panel); padding:14px 16px;}
+  .kpi .val{font-size:24px; font-weight:600;}
+  .kpi .val.crit{color:var(--critical);}
+  .kpi .val.high{color:var(--high);}
+  .kpi .lbl{font-size:11px; color:var(--muted); margin-top:3px;}
+
+  /* ---- building list ---- */
+  .b-item{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 0; border-bottom:1px solid var(--line);
+  }
+  .b-item:last-child{border-bottom:none;}
+  .b-left{display:flex; align-items:center; gap:10px;}
+  .risk-chip{
+    font-size:10px; font-weight:600; letter-spacing:0.3px;
+    padding:3px 7px; border-radius:4px; white-space:nowrap;
+  }
+  .risk-chip.CRITICAL{background:rgba(214,69,69,0.15); color:var(--critical);}
+  .risk-chip.HIGH{background:rgba(224,149,80,0.15); color:var(--high);}
+  .risk-chip.WATCH{background:rgba(217,179,79,0.15); color:var(--watch);}
+  .risk-chip.SAFE{background:rgba(79,163,129,0.15); color:var(--safe);}
+  .b-id{font-size:13px; font-weight:500;}
+  .b-meta{font-size:11px; color:var(--muted-2); margin-top:2px;}
+  .b-timer{font-size:15px; font-weight:600; text-align:right;}
+  .b-timer .u{font-size:10px; color:var(--muted); font-weight:400; margin-left:2px;}
+
+  /* ---- alerts ---- */
+  .alert-item{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--critical);
+    border-radius:6px;
+    padding:11px 13px;
+    margin-bottom:9px;
+    font-size:12.5px;
+    line-height:1.5;
+  }
+  .alert-item.HIGH{border-left-color:var(--high);}
+  .alert-item.WATCH{border-left-color:var(--watch);}
+  .alert-head{display:flex; justify-content:space-between; margin-bottom:5px; font-size:10.5px; color:var(--muted);}
+  .alert-head b{color:var(--text); font-size:12px;}
+
+  /* ---- roads table ---- */
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  th{text-align:left; color:var(--muted); font-weight:500; font-size:10.5px; letter-spacing:0.3px; padding-bottom:8px; border-bottom:1px solid var(--line);}
+  td{padding:9px 0; border-bottom:1px solid var(--line);}
+  .status-pill-sm{font-size:10px; font-weight:600; padding:3px 8px; border-radius:100px;}
+  .status-pill-sm.PASSABLE{background:rgba(79,163,129,0.15); color:var(--safe);}
+  .status-pill-sm.AT_RISK{background:rgba(224,149,80,0.15); color:var(--high);}
+  .status-pill-sm.INACCESSIBLE{background:rgba(214,69,69,0.15); color:var(--critical);}
+
+  .empty{color:var(--muted-2); font-size:12.5px; padding:20px 0; text-align:center;}
+  .scrollbox{max-height:420px; overflow-y:auto;}
+  .scrollbox::-webkit-scrollbar{width:6px;}
+  .scrollbox::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+
+  footer{padding:16px 28px; font-size:11px; color:var(--muted-2); text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1>FloodLens</h1>
+    <span class="locality" id="localityName">Connecting…</span>
+  </div>
+
+  <div class="gauge-block">
+    <div class="gauge-num">
+      <div class="val num" id="gaugeVal">—</div>
+      <div class="lbl">RIVER GAUGE, METERS</div>
+    </div>
+    <div class="gauge-bar">
+      <div class="gauge-track"><div class="gauge-fill" id="gaugeFill" style="width:0%"></div></div>
+      <div class="gauge-marks"><span>0</span><span id="dangerMark">danger</span><span id="severeMark">severe</span></div>
+    </div>
+  </div>
+
+  <div class="status-pill">
+    <span class="dot" id="liveDot"></span>
+    <span id="liveText">connecting…</span>
+  </div>
+
+  <div class="config">
+    <input id="apiBase" type="text" placeholder="http://127.0.0.1:8000" value="http://127.0.0.1:8000">
+    <button onclick="reconnect()">Connect</button>
+  </div>
+</header>
+
+<main>
+  <div class="col-left">
+    <section>
+      <div class="section-head">
+        <h2>Flood extent</h2>
+        <span class="sub" id="mapSub">—</span>
+      </div>
+      <div class="map-wrap">
+        <canvas id="floodCanvas" width="600" height="600"></canvas>
+        <div class="scrub">
+          <button onclick="stepHour(-1)">−</button>
+          <input type="range" id="hourSlider" min="0" max="72" value="1" oninput="onSlider()">
+          <button onclick="stepHour(1)">+</button>
+          <button id="playBtn" onclick="togglePlay()" title="Play through hours">▶</button>
+        </div>
+        <div class="scrub-readout" id="scrubReadout">hour <span class="num">1</span> of 72</div>
+        <div class="legend">
+          <span><span class="swatch" style="background:#08151F; border:1px solid #1F3B50;"></span>Dry ground</span>
+          <span><span class="swatch" style="background:var(--river-bright);"></span>Flooded cell</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Road access</h2>
+        <span class="sub" id="roadSub">—</span>
+      </div>
+      <table>
+        <thead><tr><th>Road</th><th>Status</th><th>Hours to inaccessible</th></tr></thead>
+        <tbody id="roadsBody"><tr><td colspan="3" class="empty">Waiting for data…</td></tr></tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="col-right">
+    <section>
+      <div class="section-head"><h2>Impact summary</h2></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="val crit num" id="kpiAtRiskPct">—</div><div class="lbl">Buildings at risk</div></div>
+        <div class="kpi"><div class="val crit num" id="kpiCritical">—</div><div class="lbl">Critical, &lt; 10h</div></div>
+        <div class="kpi"><div class="val high num" id="kpiMedical">—</div><div class="lbl">Medical facilities at risk</div></div>
+        <div class="kpi"><div class="val high num" id="kpiRoads">—</div><div class="lbl">Roads inaccessible</div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Most urgent buildings</h2>
+        <span class="sub">ranked by time remaining</span>
+      </div>
+      <div class="scrollbox" id="buildingsList"><div class="empty">Waiting for data…</div></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Live alerts</h2>
+        <span class="sub" id="alertsSub">—</span>
+      </div>
+      <div class="scrollbox" id="alertsList"><div class="empty">Waiting for data…</div></div>
+    </section>
+  </div>
+</main>
+
+<footer>FloodLens live monitor · polling <span id="footBase">http://127.0.0.1:8000</span> every 30s · countdowns tick locally between refreshes</footer>
+
+<script>
+let API_BASE = document.getElementById('apiBase').value.trim();
+let currentHour = 1;
+let availableMaxHour = 72;
+let playing = false;
+let playTimer = null;
+let refreshTimer = null;
+let countdownTimer = null;
+let buildingClock = []; // {el, secondsRemaining}
+
+function reconnect(){
+  API_BASE = document.getElementById('apiBase').value.trim().replace(/\/$/,'');
+  document.getElementById('footBase').textContent = API_BASE;
+  loadAll();
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(loadAll, 30000);
+}
+
+function setLive(ok){
+  const dot = document.getElementById('liveDot');
+  const txt = document.getElementById('liveText');
+  if(ok){
+    dot.className = 'dot live';
+    txt.textContent = 'live — updated ' + new Date().toLocaleTimeString();
+  } else {
+    dot.className = 'dot down';
+    txt.textContent = 'API offline (using precomputed demo data)';
+  }
+}
+
+async function fetchJSON(path){
+  const res = await fetch(API_BASE + path);
+  if(!res.ok) throw new Error(path + ' -> ' + res.status);
+  return res.json();
+}
+
+const FALLBACK_SCENARIO = {
+  locality_name: "Char Bandar Union (Haor-Floodplain Scenario)",
+  total_buildings: 102,
+  total_shelters: 2,
+  total_roads: 3,
+  current_gauge_level_m: 5.08,
+  danger_level_m: 6.5,
+  severe_level_m: 8.0
+};
+
+const FALLBACK_PREDICT = {
+  hours_to_danger_level: 6.0,
+  hours_to_severe_level: 13.0,
+  confidence_band_m: 0.2,
+  impact_summary: {
+    total_buildings: 102,
+    buildings_at_risk: 91,
+    buildings_at_risk_pct: 89.2,
+    buildings_critical_lt_10h: 89,
+    medical_facilities_at_risk: 1,
+    roads_inaccessible: 2,
+    roads_at_risk: 1,
+    total_roads: 3
+  },
+  roads: [
+    { id: "R1", name: "Village Access Road 1", hours_to_inaccessible: 1, status: "INACCESSIBLE" },
+    { id: "R2", name: "Village Access Road 2", hours_to_inaccessible: 1, status: "INACCESSIBLE" },
+    { id: "R3", name: "Upazila Connector Road (high ground)", hours_to_inaccessible: 13, status: "AT_RISK" }
+  ],
+  top_critical_buildings: [
+    { id: "B0002", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 2.07 },
+    { id: "B0003", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 2.20 },
+    { id: "B0004", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 1.63 },
+    { id: "B0005", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 1.54 },
+    { id: "B0006", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 2.23 },
+    { id: "B0007", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 1.62 },
+    { id: "B0010", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 1.60 },
+    { id: "B0011", type: "household", hours_to_flood: 1, risk_level: "CRITICAL", nearest_shelter_name: "Char Bandar Primary School Shelter", distance_to_shelter_km: 1.55 }
+  ]
+};
+
+const FALLBACK_ALERTS = {
+  count: 5,
+  alerts: [
+    { building_id: "B0002", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.07 km away). Take essential documents, medicine, and water. Move livestock to higher ground immediately.", source: "Claude API (Offline Mock)" },
+    { building_id: "B0003", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.20 km away). Take essential documents, medicine, and livestock to higher ground.", source: "Claude API (Offline Mock)" },
+    { building_id: "B0004", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.63 km away). Move medicine and children first.", source: "Claude API (Offline Mock)" },
+    { building_id: "B0005", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.54 km away). Evacuate before nightfall.", source: "Claude API (Offline Mock)" },
+    { building_id: "B0006", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.23 km away). Protect emergency supplies.", source: "Claude API (Offline Mock)" }
+  ]
+};
+
+function renderFallbackGrid(hour){
+  const rows = 60, cols = 60;
+  const grid = [];
+  const floodCol = Math.min(cols, Math.floor(12 + (hour / 72.0) * 32));
+  for(let r=0; r<rows; r++){
+    const row = [];
+    for(let c=0; c<cols; c++){
+      // Simulated water boundary sloping across haor floodplain
+      const riverCol = 8 + Math.sin(r / 6) * 3;
+      const flooded = (c < floodCol + Math.sin((r+hour)/4)*2);
+      row.push(flooded ? 1 : 0);
+    }
+    grid.push(row);
+  }
+  drawGrid(grid);
+  const floodedCount = grid.flat().filter(x => x === 1).length;
+  document.getElementById('mapSub').textContent =
+    floodedCount + ' / 3600 cells flooded (haor simulation)';
+  document.getElementById('scrubReadout').innerHTML =
+    'hour <span class="num">' + hour + '</span> of 72';
+}
+
+async function loadAll(){
+  try{
+    const [scenario, predict, alerts] = await Promise.all([
+      fetchJSON('/scenario/summary'),
+      fetchJSON('/predict'),
+      fetchJSON('/alerts?limit=8'),
+    ]);
+    renderScenario(scenario);
+    renderPredict(predict);
+    renderAlerts(alerts);
+    await loadMap(currentHour);
+    setLive(true);
+  } catch(e){
+    console.warn('API connection failed, loading precomputed demo dataset:', e);
+    renderScenario(FALLBACK_SCENARIO);
+    renderPredict(FALLBACK_PREDICT);
+    renderAlerts(FALLBACK_ALERTS);
+    renderFallbackGrid(currentHour);
+    setLive(false);
+  }
+}
+
+function renderScenario(s){
+  document.getElementById('localityName').textContent =
+    s.locality_name + ' · ' + s.total_buildings + ' buildings · ' + s.total_shelters + ' shelters';
+  document.getElementById('gaugeVal').textContent = s.current_gauge_level_m.toFixed(2);
+  const pct = Math.min(100, (s.current_gauge_level_m / s.severe_level_m) * 100);
+  document.getElementById('gaugeFill').style.width = pct + '%';
+  document.getElementById('gaugeFill').style.background =
+    s.current_gauge_level_m >= s.danger_level_m ? 'var(--critical)' : 'var(--river-bright)';
+  document.getElementById('dangerMark').textContent = 'danger ' + s.danger_level_m + 'm';
+  document.getElementById('severeMark').textContent = 'severe ' + s.severe_level_m + 'm';
+}
+
+function renderPredict(p){
+  const s = p.impact_summary;
+  document.getElementById('kpiAtRiskPct').textContent = s.buildings_at_risk_pct + '%';
+  document.getElementById('kpiCritical').textContent = s.buildings_critical_lt_10h;
+  document.getElementById('kpiMedical').textContent = s.medical_facilities_at_risk;
+  document.getElementById('kpiRoads').textContent = s.roads_inaccessible + ' / ' + s.total_roads;
+
+  // buildings list with local countdown
+  buildingClock = [];
+  const list = document.getElementById('buildingsList');
+  if(!p.top_critical_buildings.length){
+    list.innerHTML = '<div class="empty">No buildings currently at risk.</div>';
+  } else {
+    list.innerHTML = p.top_critical_buildings.map((b,i) => `
+      <div class="b-item">
+        <div class="b-left">
+          <span class="risk-chip ${b.risk_level}">${b.risk_level}</span>
+          <div>
+            <div class="b-id">${b.id} · ${b.type}</div>
+            <div class="b-meta">${b.nearest_shelter_name ? b.nearest_shelter_name + ' · ' + b.distance_to_shelter_km + ' km' : 'no shelter data'}</div>
+          </div>
+        </div>
+        <div class="b-timer" id="timer-${i}"><span class="num">${b.hours_to_flood}</span><span class="u">h left</span></div>
+      </div>
+    `).join('');
+    p.top_critical_buildings.forEach((b,i) => {
+      buildingClock.push({ el: document.getElementById('timer-'+i), secondsRemaining: b.hours_to_flood * 3600 });
+    });
+  }
+
+  // roads table
+  const roadsBody = document.getElementById('roadsBody');
+  document.getElementById('roadSub').textContent = s.total_roads + ' roads monitored';
+  if(!p.roads.length){
+    roadsBody.innerHTML = '<tr><td colspan="3" class="empty">No road data.</td></tr>';
+  } else {
+    roadsBody.innerHTML = p.roads.map(r => `
+      <tr>
+        <td>${r.name}</td>
+        <td><span class="status-pill-sm ${r.status}">${r.status.replace('_',' ')}</span></td>
+        <td class="num">${r.hours_to_inaccessible !== null ? r.hours_to_inaccessible + 'h' : '—'}</td>
+      </tr>
+    `).join('');
+  }
+
+  availableMaxHour = Math.max(p.hours_to_severe_level || 72, 72);
+}
+
+function renderAlerts(a){
+  document.getElementById('alertsSub').textContent = a.count + ' active · source: ' +
+    (a.alerts[0] ? a.alerts[0].source : '—');
+  const list = document.getElementById('alertsList');
+  if(!a.alerts.length){
+    list.innerHTML = '<div class="empty">No active alerts.</div>';
+    return;
+  }
+  list.innerHTML = a.alerts.map(al => `
+    <div class="alert-item ${al.risk_level}">
+      <div class="alert-head"><b>${al.building_id}</b><span>${al.risk_level}</span></div>
+      ${al.message}
+    </div>
+  `).join('');
+}
+
+async function loadMap(hour){
+  try{
+    const m = await fetchJSON('/flood-map/' + hour);
+    drawGrid(m.grid);
+    document.getElementById('mapSub').textContent =
+      m.flooded_cell_count + ' / ' + m.total_cells + ' cells flooded';
+    document.getElementById('scrubReadout').innerHTML =
+      'hour <span class="num">' + m.returned_hour + '</span> of ' + document.getElementById('hourSlider').max;
+  } catch(e){
+    renderFallbackGrid(hour);
+  }
+}
+
+function drawGrid(grid){
+  const canvas = document.getElementById('floodCanvas');
+  const ctx = canvas.getContext('2d');
+  const rows = grid.length, cols = grid[0].length;
+  const cell = Math.floor(canvas.width / Math.max(rows, cols));
+  canvas.width = cols * cell;
+  canvas.height = rows * cell;
+  ctx.fillStyle = '#08151F';
+  ctx.fillRect(0,0,canvas.width, canvas.height);
+  ctx.fillStyle = '#4FA9DB';
+  for(let r=0; r<rows; r++){
+    for(let c=0; c<cols; c++){
+      if(grid[r][c]){
+        ctx.fillRect(c*cell, r*cell, cell, cell);
+      }
+    }
+  }
+}
+
+function onSlider(){
+  currentHour = parseInt(document.getElementById('hourSlider').value, 10);
+  loadMap(currentHour);
+}
+function stepHour(d){
+  const slider = document.getElementById('hourSlider');
+  slider.value = Math.max(0, Math.min(parseInt(slider.max,10), parseInt(slider.value,10) + d));
+  onSlider();
+}
+function togglePlay(){
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '❚❚' : '▶';
+  if(playing){
+    playTimer = setInterval(() => {
+      const slider = document.getElementById('hourSlider');
+      let next = parseInt(slider.value,10) + 1;
+      if(next > parseInt(slider.max,10)) next = 0;
+      slider.value = next;
+      onSlider();
+    }, 900);
+  } else {
+    clearInterval(playTimer);
+  }
+}
+
+// local per-second countdown so the panel feels alive between 30s refreshes
+countdownTimer = setInterval(() => {
+  buildingClock.forEach(t => {
+    if(t.secondsRemaining > 0){
+      t.secondsRemaining -= 1;
+      const h = Math.floor(t.secondsRemaining/3600);
+      const m = Math.floor((t.secondsRemaining%3600)/60);
+      t.el.innerHTML = `<span class="num">${h}h ${m}m</span><span class="u">left</span>`;
+    }
+  });
+}, 60000); // update display once a minute of local tick to keep it stable, not jittery
+
+reconnect();
+</script>
+
+</body>
+</html>
