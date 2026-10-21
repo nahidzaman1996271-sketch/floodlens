@@ -4,6 +4,7 @@
 
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Live Web App](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success?style=for-the-badge&logo=githubpages&logoColor=white)](https://nahidzaman1996271-sketch.github.io/floodlens/)
 [![Tests Passing](https://img.shields.io/badge/Pytest-24%2F24%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
 [![Claude API](https://img.shields.io/badge/Claude%203.5%20Sonnet-Grounded%20Alerts-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com/)
 [![Hackathon](https://img.shields.io/badge/CloudCamp%20Bangladesh-AI%20Builders%20Congress-FF4B4B?style=for-the-badge)](https://cloudcampbd.com/)
@@ -12,6 +13,8 @@
 **Team Candy Crush · International AI Builders Congress · "Idea to Unicorn" Track**
 
 *Hyper-local, street-level flood impact forecasting and plain-language survival instructions for Bangladesh.*
+
+👉 **[Launch Interactive Web Monitor](https://nahidzaman1996271-sketch.github.io/floodlens/)**
 
 </div>
 
