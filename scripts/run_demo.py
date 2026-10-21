@@ -15,6 +15,9 @@ import os
 import sys
 from dataclasses import asdict
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from floodlens.data.synthetic import generate_scenario, DANGER_LEVEL_M, SEVERE_LEVEL_M, RIVER_BASELINE_M
@@ -73,12 +76,14 @@ def main():
         h = f"{r.hours_to_inaccessible}h" if r.hours_to_inaccessible is not None else "passable (72h+)"
         print(f"      {r.name}: {r.status} (impassable in {h})")
 
-    print("\n[5/6] Generating plain-language alerts for the most urgent buildings...")
+    print("\n[5/6] Generating plain-language alerts for the most urgent buildings (Bilingual EN & BN)...")
     alerts = generate_alerts_for_critical(building_impacts, limit=5)
     for a in alerts:
         source_tag = "[Claude API]" if a.source == "claude_api" else "[offline template]"
         print(f"\n      {source_tag} {a.building_id} ({a.risk_level}):")
-        print(f"      \"{a.message}\"")
+        print(f"      EN: \"{a.message}\"")
+        if getattr(a, "message_bn", ""):
+            print(f"      BN: \"{a.message_bn}\"")
 
     print("\n[6/6] Rendering flood maps and impact table...")
     for hour in [1, 24, max(timeline.keys())]:

@@ -20,17 +20,17 @@ ALERT_SYSTEM_PROMPT = """You are the alert-drafting layer of FloodLens, a flood 
 system for a specific locality in Bangladesh. You are given structured, already-computed \
 flood predictions (hours until flooding, risk level, nearest shelter, distance). Your ONLY \
 job is to turn that structured data into a short, calm, actionable alert message for the \
-affected household or facility.
+affected household or facility in English and Bangla.
 
 Rules:
 - Do not invent numbers. Use only the hours/distances/names given to you.
-- Keep it under 60 words.
+- Keep English message under 60 words, followed by Bangla translation.
 - Give concrete actions in priority order (move people first, then documents/medicine, then \
 livestock/valuables).
 - Name the specific shelter and distance given.
 - No alarmist language beyond what the risk level warrants. CRITICAL = urgent and direct. \
 WATCH = informative, no panic.
-- Output plain text only, no markdown, no preamble."""
+- Output JSON format with two keys: "en" and "bn"."""
 
 
 @dataclass
@@ -39,6 +39,33 @@ class Alert:
     risk_level: str
     message: str
     source: str  # "claude_api" or "template_fallback"
+    message_bn: str = ""  # Bangla localized alert
+
+
+def _template_fallback_bn(impact) -> str:
+    """Deterministic Bangla translation matching the English fallback."""
+    if impact.hours_to_flood is None:
+        return (f"বর্তমান ৭২ ঘণ্টার পূর্বাভাসে এই এলাকার জন্য কোনো বন্যার ঝুঁকি নেই। "
+                f"নিয়মিত সরকারি আবহাওয়া বুলেটিন ও নির্দেশিকা অনুসরণ করুন।")
+
+    urgency = "এখনই নিরাপদ স্থানে যান" if impact.risk_level == "CRITICAL" else \
+              "আশ্রয়ে যাওয়ার প্রস্তুতি নিন" if impact.risk_level == "HIGH" else "সতর্ক থাকুন"
+    shelter_clause = (
+        f" নিকটতম আশ্রয়কেন্দ্র: {impact.nearest_shelter_name} "
+        f"({impact.distance_to_shelter_km} কিমি দূরে)।"
+        if impact.nearest_shelter_name else ""
+    )
+    priority_clause = ""
+    if impact.priority == "medical_priority":
+        priority_clause = " রোগী এবং জরুরি ওষুধপত্র অগ্রাধিকার ভিত্তিতে সরিয়ে নিন।"
+    elif impact.priority == "vulnerable_group_priority":
+        priority_clause = " শিশু, প্রবীণ ও গর্ভবতী নারীদের আগে সরিয়ে নিন।"
+
+    return (
+        f"{urgency}: আনুমানিক {impact.hours_to_flood} ঘণ্টার মধ্যে এখানে পানি প্রবেশ করবে "
+        f"({impact.risk_level} ঝুঁকি)।{shelter_clause}{priority_clause} "
+        f"জরুরি কাগজপত্র, ওষুধ ও বিশুদ্ধ পানি সাথে নিন। সময় থাকলে গবাদিপশু উঁচু স্থানে সরিয়ে নিন।"
+    )
 
 
 def _template_fallback(impact) -> str:
@@ -91,22 +118,32 @@ def generate_alert(impact, use_api: bool | None = None) -> Alert:
             }
             response = client.messages.create(
                 model="claude-sonnet-4-6",
-                max_tokens=150,
+                max_tokens=300,
                 system=ALERT_SYSTEM_PROMPT,
                 messages=[{"role": "user", "content": json.dumps(payload)}],
             )
-            text = "".join(
+            raw = "".join(
                 block.text for block in response.content if getattr(block, "type", "") == "text"
             ).strip()
-            if text:
+            # Try to parse json
+            try:
+                data = json.loads(raw)
+                en_msg = data.get("en", raw)
+                bn_msg = data.get("bn", _template_fallback_bn(impact))
+            except Exception:
+                en_msg = raw
+                bn_msg = _template_fallback_bn(impact)
+
+            if en_msg:
                 return Alert(building_id=impact.id, risk_level=impact.risk_level,
-                              message=text, source="claude_api")
+                             message=en_msg, source="claude_api", message_bn=bn_msg)
         except Exception:
             pass  # fall through to template — the demo must never crash on network/key issues
 
     return Alert(
         building_id=impact.id, risk_level=impact.risk_level,
         message=_template_fallback(impact), source="template_fallback",
+        message_bn=_template_fallback_bn(impact),
     )
 
 

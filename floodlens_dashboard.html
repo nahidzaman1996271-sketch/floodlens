@@ -269,7 +269,10 @@
     <section>
       <div class="section-head">
         <h2>Live alerts</h2>
-        <span class="sub" id="alertsSub">—</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="langBtn" onclick="toggleLang()" style="background:var(--panel-2); border:1px solid var(--river); color:var(--river-bright); font-size:11px; font-weight:600; padding:3px 9px; border-radius:4px; cursor:pointer;" title="Switch language / ভাষা পরিবর্তন">বাংলা</button>
+          <span class="sub" id="alertsSub">—</span>
+        </div>
       </div>
       <div class="scrollbox" id="alertsList"><div class="empty">Waiting for data…</div></div>
     </section>
@@ -358,11 +361,36 @@ const FALLBACK_PREDICT = {
 const FALLBACK_ALERTS = {
   count: 5,
   alerts: [
-    { building_id: "B0002", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.07 km away). Take essential documents, medicine, and water. Move livestock to higher ground immediately.", source: "Claude API (Offline Mock)" },
-    { building_id: "B0003", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.20 km away). Take essential documents, medicine, and livestock to higher ground.", source: "Claude API (Offline Mock)" },
-    { building_id: "B0004", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.63 km away). Move medicine and children first.", source: "Claude API (Offline Mock)" },
-    { building_id: "B0005", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.54 km away). Evacuate before nightfall.", source: "Claude API (Offline Mock)" },
-    { building_id: "B0006", risk_level: "CRITICAL", message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.23 km away). Protect emergency supplies.", source: "Claude API (Offline Mock)" }
+    { 
+      building_id: "B0002", risk_level: "CRITICAL", 
+      message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.07 km away). Take essential documents, medicine, and water. Move livestock to higher ground immediately.",
+      message_bn: "এখনই নিরাপদ আশ্রয়ে যান: আনুমানিক ১ ঘণ্টার মধ্যে এখানে পানি উঠবে (জরুরি ঝুঁকি)। নিকটতম আশ্রয়: চর বন্দর প্রাথমিক বিদ্যালয় আশ্রয়কেন্দ্র (২.০৭ কিমি)। প্রয়োজনীয় ওষুধ, জরুরি কাগজপত্র ও বিশুদ্ধ পানি সাথে নিন।",
+      source: "Claude API (Offline Mock)" 
+    },
+    { 
+      building_id: "B0003", risk_level: "CRITICAL", 
+      message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.20 km away). Take essential documents, medicine, and livestock to higher ground.",
+      message_bn: "এখনই সরে যান: প্রায় ১ ঘণ্টার মধ্যে বন্যা পরিস্থিতি সৃষ্টি হবে (উচ্চ ঝুঁকি)। নিকটতম আশ্রয়কেন্দ্র: চর বন্দর প্রাথমিক বিদ্যালয় (২.২০ কিমি)। শিশু ও প্রবীণদের আগে নিরাপদ স্থানে নিন।",
+      source: "Claude API (Offline Mock)" 
+    },
+    { 
+      building_id: "B0004", risk_level: "CRITICAL", 
+      message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.63 km away). Move medicine and children first.",
+      message_bn: "সতর্কতা ও প্রস্থান: ১ ঘণ্টার মধ্যে পানি লোকালয়ে ঢুকবে। নিকটতম আশ্রয়কেন্দ্র ১.৬৩ কিমি দূরে। রোগী, ওষুধ ও গুরুত্বপূর্ণ সম্পদ উঁচু স্থানে নিন।",
+      source: "Claude API (Offline Mock)" 
+    },
+    { 
+      building_id: "B0005", risk_level: "CRITICAL", 
+      message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (1.54 km away). Evacuate before nightfall.",
+      message_bn: "জরুরি সতর্কবার্তা: সন্ধ্যার আগেই নিকটস্থ চর বন্দর প্রাথমিক বিদ্যালয় আশ্রয়কেন্দ্রে (১.৫৪ কিমি) যান। শুকনো খাবার ও খাবার পানি সাথে রাখুন।",
+      source: "Claude API (Offline Mock)" 
+    },
+    { 
+      building_id: "B0006", risk_level: "CRITICAL", 
+      message: "Move now: flooding predicted here in approximately 1 hour (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.23 km away). Protect emergency supplies.",
+      message_bn: "পানি বাড়ছে: ১ ঘণ্টার মধ্যে চলাচলের রাস্তা বন্ধ হতে পারে। নিকটতম আশ্রয়কেন্দ্র ২.২৩ কিমি দূরে। এখনই স্থানান্তর সম্পন্ন করুন।",
+      source: "Claude API (Offline Mock)" 
+    }
   ]
 };
 
@@ -470,20 +498,32 @@ function renderPredict(p){
   availableMaxHour = Math.max(p.hours_to_severe_level || 72, 72);
 }
 
+let cachedAlertsData = null;
+let currentAlertLang = 'en';
+
+function toggleLang(){
+  currentAlertLang = (currentAlertLang === 'en' ? 'bn' : 'en');
+  document.getElementById('langBtn').textContent = (currentAlertLang === 'en' ? 'বাংলা' : 'English');
+  if(cachedAlertsData) renderAlerts(cachedAlertsData);
+}
+
 function renderAlerts(a){
-  document.getElementById('alertsSub').textContent = a.count + ' active · source: ' +
-    (a.alerts[0] ? a.alerts[0].source : '—');
+  cachedAlertsData = a;
+  document.getElementById('alertsSub').textContent = a.count + ' active · ' + (currentAlertLang === 'en' ? 'English' : 'বাংলা');
   const list = document.getElementById('alertsList');
   if(!a.alerts.length){
-    list.innerHTML = '<div class="empty">No active alerts.</div>';
+    list.innerHTML = '<div class="empty">' + (currentAlertLang === 'en' ? 'No active alerts.' : 'কোনো সক্রিয় সতর্কতা নেই।') + '</div>';
     return;
   }
-  list.innerHTML = a.alerts.map(al => `
-    <div class="alert-item ${al.risk_level}">
-      <div class="alert-head"><b>${al.building_id}</b><span>${al.risk_level}</span></div>
-      ${al.message}
-    </div>
-  `).join('');
+  list.innerHTML = a.alerts.map(al => {
+    const text = (currentAlertLang === 'bn' && al.message_bn) ? al.message_bn : al.message;
+    return `
+      <div class="alert-item ${al.risk_level}">
+        <div class="alert-head"><b>${al.building_id}</b><span>${al.risk_level}</span></div>
+        ${text}
+      </div>
+    `;
+  }).join('');
 }
 
 async function loadMap(hour){
