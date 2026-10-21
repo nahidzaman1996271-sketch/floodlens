@@ -432,6 +432,24 @@ floodlens/
 
 ---
 
+## 📜 Git Commit Audit & Evaluation Proof
+
+For hackathon judges and contest evaluators reviewing commit timestamps, code progression, and originality:
+
+| Commit Hash | Timestamp (BST) | Scope / Conventional Commit Message | Direct GitHub Diff |
+|:---:|:---:|:---|:---:|
+| [`f23be2c`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/f23be2c) | 2026-10-21 22:29:13 | `feat`: Integrate live Render API backend URL into web app & docs | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/f23be2c) |
+| [`e3c8110`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/e3c8110) | 2026-10-21 22:10:50 | `feat`: Overhaul with authentic Bangladeshi emergency theme, Leaflet GIS mapping, voice alerts, Render config | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/e3c8110) |
+| [`7ce32e6`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/7ce32e6) | 2026-10-21 21:57:33 | `docs`: Add Live Interactive Web App URL and badge | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/7ce32e6) |
+| [`d37060e`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/d37060e) | 2026-10-21 21:54:53 | `feat`: Add index.html for GitHub Pages interactive live web app | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/d37060e) |
+| [`369fcb9`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/369fcb9) | 2026-10-21 21:47:44 | `docs`: Link repository URL in README and SUBMISSION_DRAFT | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/369fcb9) |
+| [`7c104c0`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/7c104c0) | 2026-10-21 21:40:00 | `feat`: Add bilingual Bangla-English localization to alerts and dashboard | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/7c104c0) |
+| [`4f9d10f`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/4f9d10f) | 2026-10-21 21:33:01 | `feat`: Initial commit for FloodLens - CloudCamp Bangladesh Hackathon | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/4f9d10f) |
+
+*Full submission repository head SHA:* `f23be2c476f14594ee961f01854d2083b4b1a760`
+
+---
+
 <div align="center">
   <p><em>Built with purpose for CloudCamp Bangladesh — International AI Builders Congress.</em></p>
   <p><strong>"Turning hours of confusion into minutes of clear action."</strong></p>
