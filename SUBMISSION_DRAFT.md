@@ -29,7 +29,9 @@ A fully functional, end-to-end prototype tested with 24 passing integration test
 ## 2. PROOF & VERIFIABLE METRICS
 *(Copy-paste into CloudCamp portal "Proof" section)*
 
-* **Live Interactive Web App**: https://nahidzaman1996271-sketch.github.io/floodlens/ (Interactive 72h flood progression scrub slider, road access table, and bilingual alerts).
+* **Live Interactive Web App**: https://nahidzaman1996271-sketch.github.io/floodlens/ (Interactive 72h flood progression scrub slider, Leaflet GIS mapping, road access table, and bilingual alerts).
+* **Live Cloud Backend API (Render)**: https://floodlens-api-vq31.onrender.com (FastAPI microservice with live endpoints `/predict`, `/alerts`, `/scenario/summary`).
+* **Live Interactive Swagger API Docs**: https://floodlens-api-vq31.onrender.com/docs
 * **GitHub Repository**: https://github.com/nahidzaman1996271-sketch/floodlens (Full source code, 24 unit/integration tests, assets, and live interactive monitor).
 * **Test Suite Verification**: 24/24 tests passing (`pytest tests/ -v`). Verifies forecast monotonicity, physical elevation sanity, shelter isolation on high ground, and API contracts.
 * **Concrete Impact Figures (from `results/prediction_export.json`)**:
