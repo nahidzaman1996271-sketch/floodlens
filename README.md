@@ -198,7 +198,7 @@ Ensure Python 3.10+ (tested on Python 3.13) is installed:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/floodlens.git
+git clone https://github.com/nahidzaman1996271-sketch/floodlens.git
 cd floodlens
 
 # Create and activate virtual environment

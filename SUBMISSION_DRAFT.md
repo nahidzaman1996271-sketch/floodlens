@@ -29,7 +29,7 @@ A fully functional, end-to-end prototype tested with 24 passing integration test
 ## 2. PROOF & VERIFIABLE METRICS
 *(Copy-paste into CloudCamp portal "Proof" section)*
 
-* **GitHub Repository**: Push this clean repository with complete documentation, source code, and assets.
+* **GitHub Repository**: https://github.com/nahidzaman1996271-sketch/floodlens (Full source code, 24 unit/integration tests, assets, and live interactive monitor).
 * **Test Suite Verification**: 24/24 tests passing (`pytest tests/ -v`). Verifies forecast monotonicity, physical elevation sanity, shelter isolation on high ground, and API contracts.
 * **Concrete Impact Figures (from `results/prediction_export.json`)**:
   * Locality: Char Bandar Union (synthetic haor-floodplain profile, 60×60 elevation grid)
