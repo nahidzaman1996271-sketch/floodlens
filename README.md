@@ -178,18 +178,37 @@ The simulation below illustrates how FloodLens models the inundation wavefront a
 
 ---
 
-## 🖥️ Live Operations Dashboard (`floodlens_dashboard.html`)
+## 🖥️ Live Emergency Operations Platform
 
-FloodLens includes an interactive mission-control monitor designed for union disaster response teams:
+🌐 **Live Web Deployment**: **[https://nahidzaman1996271-sketch.github.io/floodlens/](https://nahidzaman1996271-sketch.github.io/floodlens/)**
 
-* **Interactive Time-Scrubbing**: Move the slider between Hour 0 and 72 or press `▶ Play` to visualize the advancing floodwaters.
-* **Dual-Mode Operation**:
-  * **Live Mode**: Continuously polls the local FastAPI backend (`/predict`, `/alerts`, `/flood-map`) every 30 seconds.
-  * **Offline Demo Mode**: Embedded precomputed scenario fallback so judges can explore the complete interface simply by opening the HTML file in any modern web browser.
-* **Road Passability Status Table**: Real-time traffic alerts on village evacuation routes.
-* **Live Ticking Countdowns**: Per-second local countdowns for high-risk homesteads.
+FloodLens includes a production-grade, Bangladeshi-themed national flood monitoring and evacuation command center designed for the Ministry of Disaster Management, Union Disaster Management Committees (UDMC), and local frontline responders:
 
-To view the dashboard, simply launch the API and open [floodlens_dashboard.html](file:///d:/cloudcamp%20hackathon/algorithm/floodlens_project/floodlens_dashboard.html) in your browser.
+* **🗺️ Real-World Interactive Leaflet GIS Mapping**:
+  - Replaces raw grids with a full **Leaflet.js geospatial map** covering Bangladesh's high-risk river basins.
+  - Features real vector layers for the **Surma River channel**, animated flood inundation zones, and **evacuation road networks**.
+* **🏛️ Multi-Station Basins (FFWC Telemetry)**:
+  - Toggle between key flood monitoring stations: **Sunamganj (Surma River / Haor Basin)**, **Kurigram (Brahmaputra Basin)**, **Sirajganj (Jamuna Basin)**, and **Sylhet Sadar (Kushiyara Basin)**.
+* **📢 Emergency Bangla Audio Siren & Voice Warning**:
+  - Built-in emergency siren chime and **natural Bangla Speech Synthesis (TTS)** delivering verbal evacuation directives for rural non-literate populations.
+* **🏃 Dynamic Personal Survival Plan & Evacuation Routing**:
+  - Search or click any homestead to generate a tailored survival card with **submersion countdown**, **assigned safe shelter with elevation (+14.5m)**, and an active **routed evacuation path line**.
+* **🌐 100% Bilingual Interface (`[বাংলা | English]`)**:
+  - Instant one-click language toggle across all national warnings, gauges, road tables, and priority directives.
+
+---
+
+## ☁️ Cloud Deployment on Render (1-Click)
+
+The FastAPI backend is fully prepared for cloud container or Python hosting on [Render.com](https://render.com/):
+
+* **`render.yaml`**: Pre-configured Blueprint for zero-friction deployment.
+* **`Dockerfile`**: Containerized lightweight Python 3.11 environment.
+
+To deploy on Render:
+1. Link your GitHub repository `https://github.com/nahidzaman1996271-sketch/floodlens` in the Render dashboard.
+2. Render will automatically detect `render.yaml` or `Dockerfile` and expose the REST endpoints at `https://your-app.onrender.com`.
+3. Enter your Render backend URL in the web platform's API config to connect live telemetry!
 
 ---
 
