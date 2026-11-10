@@ -7,7 +7,7 @@
 [![Live Web App](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success?style=for-the-badge&logo=githubpages&logoColor=white)](https://nahidzaman1996271-sketch.github.io/floodlens/)
 [![Render API](https://img.shields.io/badge/Render-Live%20API-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://floodlens-api-vq31.onrender.com/docs)
 [![Tests Passing](https://img.shields.io/badge/Pytest-24%2F24%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
-[![Claude API](https://img.shields.io/badge/Claude%203.5%20Sonnet-Grounded%20Alerts-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com/)
+[![Claude API](https://img.shields.io/badge/Claude%20Sonnet%204.6-Grounded%20Alerts-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com/)
 [![Hackathon](https://img.shields.io/badge/CloudCamp%20Bangladesh-AI%20Builders%20Congress-FF4B4B?style=for-the-badge)](https://cloudcampbd.com/)
 [![License MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 

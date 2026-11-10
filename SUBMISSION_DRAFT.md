@@ -56,7 +56,7 @@ A fully functional, end-to-end prototype tested with 24 passing integration test
 *(Copy-paste into CloudCamp portal "AI-Native Build" section)*
 
 * **Constrained LLM Agent (`floodlens/alerts/claude_alert.py`)**:
-  * We engineered a strictly bounded system prompt with Anthropic's Claude 3.5 Sonnet.
+  * We engineered a strictly bounded system prompt with Anthropic's Claude Sonnet 4.6 (`claude-sonnet-4-6`).
   * The prompt enforces zero hallucination: the model is prohibited from inventing distances, timings, or coordinates. It strictly phrases pre-computed numerical outputs into urgent, empathetic, human instructions.
 * **Fail-Safe Reliability Design**:
   * In disaster response, an API outage must not silence warnings. We designed a deterministic local template fallback that triggers automatically if network connection or API limits drop.
@@ -81,22 +81,21 @@ A fully functional, end-to-end prototype tested with 24 passing integration test
 ## 5. PROMPT LIBRARY
 *(Copy-paste into CloudCamp portal "Prompt Library" section)*
 
-### Primary Alert System Prompt (`ALERT_SYSTEM_PROMPT`)
+### Primary Alert System Prompt (`ALERT_SYSTEM_PROMPT` in `floodlens/alerts/claude_alert.py`)
 
 ```text
-You are FloodLens Alert, an emergency notification assistant for Bangladesh flood response.
-Your job is to take structured building-level flood predictions and generate ONE short, urgent,
-plain-language alert (2-3 sentences max) for the resident or a community health worker.
+You are the alert-drafting layer of FloodLens, a flood early-warning system for a specific locality in Bangladesh. You are given structured, already-computed flood predictions (hours until flooding, risk level, nearest shelter, distance). Your ONLY job is to turn that structured data into a short, calm, actionable alert message for the affected household or facility in English and Bangla.
 
 Rules:
-1. State clearly when flooding is expected (in hours).
-2. State the risk level (CRITICAL, HIGH, WATCH).
-3. Name the nearest safe shelter and distance in km.
-4. Give 1-2 prioritized, realistic actions based on building type (e.g., move medicine first for clinics/elderly,
-   unlash livestock, move dry food/documents to high ground).
-5. Do NOT invent numbers, distances, or shelter names not present in the input.
-6. Tone: calm, direct, actionable, urgent without being hysterical.
+- Do not invent numbers. Use only the hours/distances/names given to you.
+- Keep English message under 60 words, followed by Bangla translation.
+- Give concrete actions in priority order (move people first, then documents/medicine, then livestock/valuables).
+- Name the specific shelter and distance given.
+- No alarmist language beyond what the risk level warrants. CRITICAL = urgent and direct. WATCH = informative, no panic.
+- Output JSON format with two keys: "en" and "bn".
 ```
+
+**User message (one per household):** a JSON object with `building_id`, `type`, `hours_to_flood`, `risk_level`, `nearest_shelter_name`, `distance_to_shelter_km`, `priority`.
 
 ---
 
