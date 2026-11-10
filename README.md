@@ -6,7 +6,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Live Web App](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success?style=for-the-badge&logo=githubpages&logoColor=white)](https://nahidzaman1996271-sketch.github.io/floodlens/)
 [![Render API](https://img.shields.io/badge/Render-Live%20API-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://floodlens-api-vq31.onrender.com/docs)
-[![Tests Passing](https://img.shields.io/badge/Pytest-24%2F24%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
+[![Tests Passing](https://img.shields.io/badge/Pytest-30%2F30%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
 [![Claude API](https://img.shields.io/badge/Claude%20Sonnet%204.6-Grounded%20Alerts-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com/)
 [![Hackathon](https://img.shields.io/badge/CloudCamp%20Bangladesh-AI%20Builders%20Congress-FF4B4B?style=for-the-badge)](https://cloudcampbd.com/)
 [![License MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
@@ -244,7 +244,7 @@ python scripts/run_demo.py
 
 *Output artifacts are written to `results/` (`flood_map_hour_*.png`, `impact_table_top15.png`, `prediction_export.json`).*
 
-### 3. Run the Test Suite (24/24 Passing)
+### 3. Run the Test Suite (30/30 Passing)
 
 Validate every stage of data generation, forecasting bounds, BFS flood-fill, and API contracts:
 
@@ -287,6 +287,36 @@ uvicorn floodlens.api.main:app --reload --port 8000
 ```
 
 Interactive OpenAPI docs will be available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+
+---
+
+## 🔌 MCP Server (Model Context Protocol)
+
+FloodLens also ships an **MCP server** (`floodlens/mcp_server.py`, built on the official `mcp` Python SDK v2) so any MCP host (Claude Code, Claude Desktop, or a custom agent) can query household flood risk directly as tools. It reuses the exact same cached pipeline as the REST API, so the numbers always match.
+
+| Tool | Description |
+|---|---|
+| `get_scenario_summary` | Locality, current gauge level, danger/severe thresholds, counts |
+| `get_flood_forecast` | Hours to danger & severe stage, confidence band, impact summary |
+| `list_at_risk_buildings` | Buildings flooding within 72h, most urgent first (filter by risk tier) |
+| `get_building_risk` | One building's time-to-flood, risk tier and nearest shelter |
+| `get_road_status` | Hour each evacuation road becomes impassable |
+| `get_flood_extent` | % of the area underwater at a forecast hour |
+| `get_flood_alerts` | Grounded English + Bangla alerts (Claude, or template fallback) |
+
+All tools are annotated read-only. Run it over stdio:
+
+```bash
+python -m floodlens.mcp_server
+```
+
+Add it to Claude Code from the project root:
+
+```bash
+claude mcp add floodlens -- python -m floodlens.mcp_server
+```
+
+The repo also includes a project-scoped [`.mcp.json`](.mcp.json), so Claude Code offers to enable the server when you open the project.
 
 ---
 
@@ -360,9 +390,11 @@ floodlens/
 │   ├── alerts/                      # Claude LLM alert layer & prompt engineering
 │   │   ├── __init__.py
 │   │   └── claude_alert.py          # Grounded prompt & offline fallback logic
+│   ├── mcp_server.py                # MCP server exposing flood-risk tools (stdio)
+│   ├── pipeline.py                  # Shared cached pipeline used by API + MCP server
 │   ├── api/                         # FastAPI application
 │   │   ├── __init__.py
-│   │   └── main.py                  # REST API routes and cached pipeline execution
+│   │   └── main.py                  # REST API routes
 │   ├── data/                        # Hydrological & spatial generation
 │   │   ├── __init__.py
 │   │   └── synthetic.py             # Haor terrain, gauge history & demographic synthesis
@@ -384,7 +416,8 @@ floodlens/
 │   ├── run_demo.py                  # End-to-end execution script
 │   └── generate_architecture_graphic.py # Renders system_architecture.png
 ├── tests/                           # Robust test suite
-│   └── test_pipeline.py             # 24 comprehensive pytest integration tests
+│   ├── test_pipeline.py             # 24 pipeline & API integration tests
+│   └── test_mcp_server.py           # 6 MCP server tool tests
 ├── .gitignore                       # Clean Git ignore rules (venv, caches, env)
 ├── floodlens_dashboard.html         # Interactive real-time operations monitor
 ├── requirements.txt                 # Pinned dependencies
@@ -424,7 +457,7 @@ floodlens/
 | Milestone | Status | Details |
 |---|---|---|
 | **Synthetic Hydrological Prototype** | ✅ **Complete** | Calibrated haor-profile DEM, gauge dynamics, BFS propagation, Claude alert layer |
-| **Comprehensive Test Suite** | ✅ **Complete** | 24 unit/integration tests verifying physical guardrails, API contracts, and edge cases |
+| **Comprehensive Test Suite** | ✅ **Complete** | 30 unit/integration tests verifying physical guardrails, API contracts, MCP tools, and edge cases |
 | **Real DEM Integration** | 🔄 **Next Phase** | Ingest 30m open SRTM & Copernicus Digital Elevation Data for target Upazilas |
 | **Live BWDB API Feed** | 🔄 **Next Phase** | Direct webhook connection to Bangladesh Water Development Board real-time river telemetry |
 | **OpenStreetMap Alignment** | 🔄 **Next Phase** | Real building polygons and official road network geometries from OSM Bangladesh |

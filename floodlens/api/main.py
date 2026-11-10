@@ -13,17 +13,11 @@ Endpoints:
 
 from __future__ import annotations
 
-from functools import lru_cache
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from floodlens.data.synthetic import (
-    generate_scenario, DANGER_LEVEL_M, SEVERE_LEVEL_M, RIVER_BASELINE_M,
-)
-from floodlens.models.water_level_forecast import forecast_water_level
-from floodlens.models.flood_propagation import flood_timeline
-from floodlens.models.impact_assessment import assess_buildings, assess_roads, summarize_impact
+from floodlens.data.synthetic import DANGER_LEVEL_M, SEVERE_LEVEL_M
+from floodlens.pipeline import run_pipeline as _pipeline
 from floodlens.alerts.claude_alert import generate_alerts_for_critical
 
 app = FastAPI(
@@ -34,25 +28,6 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
 )
-
-
-@lru_cache(maxsize=1)
-def _pipeline():
-    """Runs the full pipeline once and caches it. In production this would
-    be a scheduled job re-run whenever new gauge/rainfall data arrives, not
-    a per-request computation."""
-    scenario = generate_scenario(seed=42)
-    forecast = forecast_water_level(
-        scenario.gauge_history, scenario.rainfall_forecast, DANGER_LEVEL_M, SEVERE_LEVEL_M,
-    )
-    timeline = flood_timeline(scenario.dem, scenario.river_mask, forecast.forecast, RIVER_BASELINE_M)
-    building_impacts = assess_buildings(scenario.buildings, scenario.shelters, timeline)
-    road_impacts = assess_roads(scenario.roads, timeline)
-    summary = summarize_impact(building_impacts, road_impacts)
-    return {
-        "scenario": scenario, "forecast": forecast, "timeline": timeline,
-        "building_impacts": building_impacts, "road_impacts": road_impacts, "summary": summary,
-    }
 
 
 @app.get("/health")

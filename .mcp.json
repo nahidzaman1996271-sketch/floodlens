@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "floodlens": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "floodlens.mcp_server"]
+    }
+  }
+}
