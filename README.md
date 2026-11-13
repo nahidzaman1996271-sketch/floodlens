@@ -242,7 +242,13 @@ Execute the demo script to simulate the 72-hour storm surge, generate new maps, 
 python scripts/run_demo.py
 ```
 
-*Output artifacts are written to `results/` (`flood_map_hour_*.png`, `impact_table_top15.png`, `prediction_export.json`).*
+*Output artifacts are written to `results/` (`flood_map_hour_*.png`, `impact_table_top15.png`, `prediction_export.json`, `floodlens.duckdb`).*
+
+**DuckDB analytical store:** every run is also persisted to `results/floodlens.duckdb` (tables: `runs`, `gauge_history`, `rainfall_forecast`, `level_forecast`, `building_impacts`, `road_impacts`, keyed by `run_id`) so forecasts can be queried with SQL and compared across runs:
+
+```bash
+python -c "from floodlens.storage import duckdb_store as d; print(d.query(d.RISK_BREAKDOWN_SQL))"
+```
 
 ### 3. Run the Test Suite (30/30 Passing)
 

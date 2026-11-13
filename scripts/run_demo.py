@@ -136,6 +136,19 @@ def main():
         json.dump(export, f, indent=2, default=str)
     print(f"      Wrote {json_path}")
 
+    # Persist the run to the embedded DuckDB analytical store (optional dependency).
+    try:
+        from floodlens.storage import duckdb_store
+        db_path = os.path.join(RESULTS_DIR, "floodlens.duckdb")
+        run_id = duckdb_store.save_run({
+            "scenario": scenario, "forecast": forecast, "summary": summary,
+            "building_impacts": building_impacts, "road_impacts": road_impacts,
+        }, db_path=db_path)
+        print(f"      Stored run {run_id} in {db_path}")
+        print(duckdb_store.query(duckdb_store.RISK_BREAKDOWN_SQL, db_path=db_path).to_string(index=False))
+    except ImportError:
+        print("      (duckdb not installed -- skipping DuckDB store; pip install duckdb)")
+
     print("\n" + "=" * 70)
     print("Demo complete. See results/ for maps, table, and JSON export.")
     print("=" * 70)
