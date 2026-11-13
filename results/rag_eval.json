@@ -1,0 +1,90 @@
+{
+  "index": {
+    "documents": 6,
+    "chunks": 30,
+    "chunk_chars_min": 122,
+    "chunk_chars_max": 403,
+    "embedding_backend": "ollama:nomic-embed-text",
+    "vector_store": "duckdb",
+    "context_backends": [
+      "ollama_local"
+    ],
+    "contextual": true
+  },
+  "build_seconds": 203.3,
+  "configs": {
+    "naive_rag": {
+      "hit@1": 0.938,
+      "hit@3": 1.0,
+      "mrr@3": 0.969,
+      "misses": []
+    },
+    "contextual_hybrid": {
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "mrr@3": 1.0,
+      "misses": [],
+      "seconds": 37.7
+    },
+    "full_pipeline": {
+      "hit@1": 0.875,
+      "hit@3": 1.0,
+      "mrr@3": 0.938,
+      "misses": [],
+      "seconds": 488.1
+    }
+  },
+  "graph": {
+    "nodes": 121,
+    "edges": 419
+  },
+  "graph_rag_sample": {
+    "building_id": "B0102",
+    "query": "A clinic at CRITICAL flood risk will flood in 1 hours. What should people do and what should they carry? It is a health facility with patients.",
+    "facts": [
+      "Nearest shelter is Union Cyclone Shelter #12, 1.57 km away, capacity 600 people.",
+      "About 216 people from 54 at-risk buildings are assigned to Union Cyclone Shelter #12 (36% of capacity).",
+      "Access road Upazila Connector Road (high ground) becomes impassable in about 13 hours."
+    ],
+    "topics": [
+      "03_medical_facility_evacuation",
+      "01_household_evacuation",
+      "05_roads_and_boats"
+    ],
+    "guidance": [
+      "Health workers should set up a temporary treatment point inside the nearest large shelter, stocked with ORS, zinc, antibiotics for prescribed patients, wound dressing and snake-bite referral information, because snake bites increase sharply during floods.",
+      "Move patients who cannot walk, newborns and women in labour first, using boats arranged in advance with the UDMC. Move vaccines and insulin in cold boxes with ice packs, along with essential medicines, delivery kits and patient registers, to the upper floor or to the designated relocation site.",
+      "Leave for the assigned shelter as soon as an alert says your home is at CRITICAL risk or water is expected within 10 hours. Do not wait for water to enter the house: village roads are usually cut off before homesteads flood, and moving at night through moving water is the most common cause of drowning during floods. If the risk level is HIGH, pack an emergency bag and agree as a family where to meet."
+    ],
+    "sources": [
+      "03_medical_facility_evacuation#2",
+      "03_medical_facility_evacuation#1",
+      "01_household_evacuation#0"
+    ],
+    "trace": {
+      "steps": [
+        "hyde",
+        "hybrid_rrf",
+        "rerank"
+      ],
+      "hyde": {
+        "backend": "ollama_local",
+        "passage": "People should evacuate the clinic immediately to a safer location. They should carry essential medical records, medications, and vital patient information. Additionally, they should ensure all critical medical equipment is packed and ready for transport."
+      },
+      "reranker": "ollama_local"
+    }
+  },
+  "full_pipeline_trace_sample": {
+    "question": "The shelter is almost full, where do new families go?",
+    "steps": [
+      "hyde",
+      "hybrid_rrf",
+      "rerank"
+    ],
+    "hyde": {
+      "backend": "ollama_local",
+      "passage": "In rural Bangladesh, if a shelter is almost full, new families can seek alternative shelters in nearby villages or temporary structures set up by local authorities. They may also be directed to community centers or schools that have been designated as emergency shelters."
+    },
+    "reranker": "ollama_local"
+  }
+}

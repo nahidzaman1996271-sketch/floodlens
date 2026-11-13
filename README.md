@@ -85,6 +85,14 @@ FloodLens ingests hydrological sensor streams, precipitation forecasts, and terr
   <img src="assets/system_architecture.png" alt="FloodLens System Architecture" width="900"/>
 </div>
 
+### AI Stack (DuckDB · RAG / Graph RAG · local LLMs · n8n · CI)
+
+<div align="center">
+  <img src="assets/ai_stack_architecture.png" alt="FloodLens AI stack: forecast pipeline, DuckDB store, RAG and Graph RAG, local-first bilingual alerts, delivery and automation" width="900"/>
+</div>
+
+*Rendered by `scripts/generate_ai_stack_graphic.py`. Retrieval scores come from `results/rag_eval.json`; local-model alerts from `results/ollama_alerts_sample.json`.*
+
 ### End-to-End Pipeline
 
 ```mermaid

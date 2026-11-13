@@ -1,0 +1,256 @@
+{
+  "index": {
+    "documents": 6,
+    "chunks": 30,
+    "chunk_chars_min": 122,
+    "chunk_chars_max": 403,
+    "embedding_backend": "ollama:nomic-embed-text",
+    "vector_store": "duckdb",
+    "context_backends": [
+      "ollama_local"
+    ],
+    "contextual": true
+  },
+  "chunks": [
+    {
+      "chunk_id": "01_household_evacuation#0",
+      "section": "When to move",
+      "chars": 403,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'When to move'. When an alert indicates your home is at CRITICAL risk or water is expected within 10 hours, evacuate immediately to the assigned shelter. Do not wait for water to enter your home; roads are usually cut off before homesteads flood, and moving at night through moving water is extremely dangerous. For higher risk levels, prepare an emergency bag and decide where to meet as a family.",
+      "context_backend": "ollama_local",
+      "text": "Leave for the assigned shelter as soon as an alert says your home is at CRITICAL risk or water is expected within 10 hours. Do not wait for water to enter the house: village roads are usually cut off before homesteads flood, and moving at night through moving water is the most common cause of drowning during floods. If the risk level is HIGH, pack an emergency bag and agree as a family where to meet."
+    },
+    {
+      "chunk_id": "01_household_evacuation#1",
+      "section": "When to move",
+      "chars": 126,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'When to move'. When the alert level is WATCH, ensure you have a charged phone and stay informed by listening to local announcements.",
+      "context_backend": "ollama_local",
+      "text": "If the level is WATCH, keep a phone charged and listen to the mosque loudspeaker, community radio and volunteer announcements."
+    },
+    {
+      "chunk_id": "01_household_evacuation#2",
+      "section": "Who moves first",
+      "chars": 122,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'Who moves first'. When evacuating, prioritize moving children, older people, pregnant women, and people with disabilities as soon as roads and boats are still accessible.",
+      "context_backend": "ollama_local",
+      "text": "Move children, older people, pregnant women and people with disabilities first, while roads and boats are still available."
+    },
+    {
+      "chunk_id": "01_household_evacuation#3",
+      "section": "Who moves first",
+      "chars": 155,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'Who moves first'. Able-bodied adults can return home if the alert time allows and the route remains dry, ensuring they can secure belongings.",
+      "context_backend": "ollama_local",
+      "text": "One adult should stay with them at the shelter. Able-bodied adults can return to secure the house only if the alert time allows and the route is still dry."
+    },
+    {
+      "chunk_id": "01_household_evacuation#4",
+      "section": "What to carry",
+      "chars": 252,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'What to carry'. What items should be carried for safety during evacuation, and what not to carry?",
+      "context_backend": "ollama_local",
+      "text": "Carry national ID cards, land and school documents in a sealed plastic bag, all prescription medicine, oral rehydration salts, drinking water, dry food such as chira and muri, a torch, a charged phone and some cash. Do not try to carry heavy furniture."
+    },
+    {
+      "chunk_id": "01_household_evacuation#5",
+      "section": "Safety on the way",
+      "chars": 143,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'Safety on the way'. When moving to a shelter, always avoid water deeper than knee height or moving water to prevent being knocked down.",
+      "context_backend": "ollama_local",
+      "text": "Never walk or drive through water deeper than knee height or water that is moving. Fifteen centimetres of moving water can knock an adult down."
+    },
+    {
+      "chunk_id": "01_household_evacuation#6",
+      "section": "Safety on the way",
+      "chars": 133,
+      "context": "From the FloodLens guide 'Household Flood Evacuation Guidance', section 'Safety on the way'. If trapped during flood, go to the highest floor or roof and signal using a cloth or torch. Keep away from electric poles and fallen wires.",
+      "context_backend": "ollama_local",
+      "text": "Keep away from electric poles and fallen wires. If you are trapped, go to the highest floor or roof and signal with a cloth or torch."
+    },
+    {
+      "chunk_id": "02_shelter_operations#0",
+      "section": "Opening a shelter",
+      "chars": 129,
+      "context": "From the FloodLens guide 'Flood Shelter Operations', section 'Opening a shelter'. Flood shelters in riverine and haor areas are typically found in school buildings or specially constructed multi-purpose shelters elevated on plinths to protect against floodwaters.",
+      "context_backend": "ollama_local",
+      "text": "Flood shelters in riverine and haor areas are usually school buildings or purpose-built multi-purpose shelters on raised plinths."
+    },
+    {
+      "chunk_id": "02_shelter_operations#1",
+      "section": "Opening a shelter",
+      "chars": 212,
+      "context": "From the FloodLens guide 'Flood Shelter Operations', section 'Opening a shelter'. Flood shelters in riverine and haor areas are usually school buildings or purpose-built multi-purpose shelters on raised plinths. The shelter committee should open the building, check that toilets and tube wells are usable, and register every arriving family by name, village and number of people as soon as a danger-level forecast is issued.",
+      "context_backend": "ollama_local",
+      "text": "The shelter committee should open the building, check that toilets and tube wells are usable, and register every arriving family by name, village and number of people as soon as a danger-level forecast is issued."
+    },
+    {
+      "chunk_id": "02_shelter_operations#2",
+      "section": "Capacity and overflow",
+      "chars": 273,
+      "context": "From the FloodLens guide 'Flood Shelter Operations', section 'Capacity and overflow'. Flood shelters typically operate with a planned capacity, and managers notify the UDMC when approaching 80% occupancy to direct overflow to the next available shelter.",
+      "context_backend": "ollama_local",
+      "text": "Each shelter has a planned capacity. When registrations reach about 80 percent of capacity, the shelter manager should tell the UDMC so that new arrivals can be directed to the next nearest shelter. Alerts should name a second shelter when the nearest one is close to full."
+    },
+    {
+      "chunk_id": "02_shelter_operations#3",
+      "section": "Separate spaces",
+      "chars": 231,
+      "context": "From the FloodLens guide 'Flood Shelter Operations', section 'Separate spaces'. Each shelter should have designated areas for different needs including women, breastfeeding mothers, and sick individuals, with livestock kept outside.",
+      "context_backend": "ollama_local",
+      "text": "Keep a separate, private area for women and adolescent girls, a space for breastfeeding mothers, and a corner for people who are sick. Livestock should be kept on the raised ground outside the shelter, never inside the living area."
+    },
+    {
+      "chunk_id": "02_shelter_operations#4",
+      "section": "Water and health",
+      "chars": 262,
+      "context": "From the FloodLens guide 'Flood Shelter Operations', section 'Water and health'. Water for drinking should come from a raised tube well or be treated, as flood water can spread diarrhoea; ORS and soap should be distributed upon arrival.",
+      "context_backend": "ollama_local",
+      "text": "Drinking water must come from a raised tube well or be treated with purification tablets. Flood water spreads diarrhoea, so ORS and soap should be distributed on arrival. Report any cluster of diarrhoea or fever to the community clinic health worker immediately."
+    },
+    {
+      "chunk_id": "03_medical_facility_evacuation#0",
+      "section": "Priority",
+      "chars": 246,
+      "context": "From the FloodLens guide 'Medical Facility Flood Response', section 'Priority'. Community clinics and health centers at risk of flooding are prioritized for evacuation to ensure patient care continuity and facility availability post-flood.",
+      "context_backend": "ollama_local",
+      "text": "Community clinics, union health and family welfare centres and upazila health complexes that are forecast to flood get the highest evacuation priority, because their patients cannot move quickly and because the facility is needed after the flood."
+    },
+    {
+      "chunk_id": "03_medical_facility_evacuation#1",
+      "section": "Before water arrives",
+      "chars": 295,
+      "context": "From the FloodLens guide 'Medical Facility Flood Response', section 'Before water arrives'. Before water arrives, move patients who cannot walk, newborns, and women in labour first using boats arranged in advance with the UDMC. Move vaccines and insulin to the upper floor or designated relocation site in cold boxes with ice packs.",
+      "context_backend": "ollama_local",
+      "text": "Move patients who cannot walk, newborns and women in labour first, using boats arranged in advance with the UDMC. Move vaccines and insulin in cold boxes with ice packs, along with essential medicines, delivery kits and patient registers, to the upper floor or to the designated relocation site."
+    },
+    {
+      "chunk_id": "03_medical_facility_evacuation#2",
+      "section": "Continuity of care",
+      "chars": 255,
+      "context": "From the FloodLens guide 'Medical Facility Flood Response', section 'Continuity of care'. Before water arrives, health workers should set up a temporary treatment point inside the nearest large shelter, stocked with essential items to treat flood victims, including ORS, zinc, antibiotics, wound dressing, and snake-bite referral information.",
+      "context_backend": "ollama_local",
+      "text": "Health workers should set up a temporary treatment point inside the nearest large shelter, stocked with ORS, zinc, antibiotics for prescribed patients, wound dressing and snake-bite referral information, because snake bites increase sharply during floods."
+    },
+    {
+      "chunk_id": "03_medical_facility_evacuation#3",
+      "section": "Communication",
+      "chars": 134,
+      "context": "From the FloodLens guide 'Medical Facility Flood Response', section 'Communication'. The facility in-charge should inform the upazila health office about the location and accessibility of the temporary treatment point set up in a nearby shelter.",
+      "context_backend": "ollama_local",
+      "text": "The facility in-charge should tell the upazila health office where the temporary treatment point is located and how it can be reached."
+    },
+    {
+      "chunk_id": "04_livestock_and_assets#0",
+      "section": "Livestock",
+      "chars": 367,
+      "context": "From the FloodLens guide 'Livestock, Crops and Household Assets', section 'Livestock'. Livestock, such as cattle, goats, and poultry, are crucial for rural households in Bangladesh.",
+      "context_backend": "ollama_local",
+      "text": "Cattle, goats and poultry are a household's main savings in rural Bangladesh. If the alert gives more than six hours, move animals to a raised killa (earthen mound), embankment or the high ground next to the shelter. Take enough dry fodder and straw for several days, because grazing land will be under water. Never tie animals inside the house, where they can drown."
+    },
+    {
+      "chunk_id": "04_livestock_and_assets#1",
+      "section": "Grain and seed",
+      "chars": 251,
+      "context": "From the FloodLens guide 'Livestock, Crops and Household Assets', section 'Grain and seed'. Grain and seed are crucial, with seed for the next season being more important than stored food due to the availability of food aid.",
+      "context_backend": "ollama_local",
+      "text": "Store rice, seed and fertiliser in sealed drums or bags on a raised platform (macha) at least one metre above the expected flood level. Seed for the next season is more important than stored food, because food aid is usually available but seed is not."
+    },
+    {
+      "chunk_id": "04_livestock_and_assets#2",
+      "section": "Household items",
+      "chars": 146,
+      "context": "From the FloodLens guide 'Livestock, Crops and Household Assets', section 'Household items'. Household items like tube-well heads and solar panel batteries should be lifted to a raised platform (macha) or roof, and electricity should be switched off at the meter before leaving.",
+      "context_backend": "ollama_local",
+      "text": "Lift the tube-well head, solar panel batteries and important tools onto the macha or roof. Switch off the electricity at the meter before leaving."
+    },
+    {
+      "chunk_id": "04_livestock_and_assets#3",
+      "section": "When time is short",
+      "chars": 149,
+      "context": "From the FloodLens guide 'Livestock, Crops and Household Assets', section 'When time is short'. When time is short, prioritize people over livestock and assets. Leave immediately if flooding is expected within three hours.",
+      "context_backend": "ollama_local",
+      "text": "People come before animals and assets. If the alert says flooding is expected within three hours, leave immediately and do not go back for livestock."
+    },
+    {
+      "chunk_id": "05_roads_and_boats#0",
+      "section": "Roads close before houses flood",
+      "chars": 259,
+      "context": "From the FloodLens guide 'Roads, Boats and Evacuation Routes', section 'Roads close before houses flood'. Village roads often become impassable before houses flood, necessitating immediate evacuation plans.",
+      "context_backend": "ollama_local",
+      "text": "Village access roads and culverts in low-lying areas usually go under water hours before homesteads do. When FloodLens predicts a road will become inaccessible, all evacuation using that road must finish before that time. After that, people must move by boat."
+    },
+    {
+      "chunk_id": "05_roads_and_boats#1",
+      "section": "Boat evacuation",
+      "chars": 256,
+      "context": "From the FloodLens guide 'Roads, Boats and Evacuation Routes', section 'Boat evacuation'. Boat evacuation: The UDMC should list boat owners in each ward before the monsoon and agree on who will carry people to which shelter. Do not overload boats: keep within the stated number of passengers, put children in the middle, and avoid crossing the main river current.",
+      "context_backend": "ollama_local",
+      "text": "The UDMC should list boat owners in each ward before the monsoon and agree on who will carry people to which shelter. Do not overload boats: keep within the stated number of passengers, put children in the middle, and avoid crossing the main river current."
+    },
+    {
+      "chunk_id": "05_roads_and_boats#2",
+      "section": "Signposting",
+      "chars": 173,
+      "context": "From the FloodLens guide 'Roads, Boats and Evacuation Routes', section 'Signposting'. Volunteers should mark the safe route to each shelter with red flags or painted bamboo poles before the water rises, ensuring visibility as the road edge becomes obscured.",
+      "context_backend": "ollama_local",
+      "text": "Volunteers should mark the safe route to each shelter with red flags or painted bamboo poles before the water rises, because the road edge cannot be seen once it is covered."
+    },
+    {
+      "chunk_id": "05_roads_and_boats#3",
+      "section": "Emergency numbers",
+      "chars": 148,
+      "context": "From the FloodLens guide 'Roads, Boats and Evacuation Routes', section 'Emergency numbers'. Emergency contacts are crucial during floods, with the national emergency number in Bangladesh being 999. Upazila control rooms are opened during floods and their numbers are announced through the UDMC.",
+      "context_backend": "ollama_local",
+      "text": "The national emergency number in Bangladesh is 999. Upazila control rooms are opened during floods and their numbers are announced through the UDMC."
+    },
+    {
+      "chunk_id": "06_warning_levels#0",
+      "section": "Where forecasts come from",
+      "chars": 143,
+      "context": "From the FloodLens guide 'Understanding River Flood Warning Levels', section 'Where forecasts come from'. In Bangladesh, river level forecasts are produced by the Flood Forecasting and Warning Centre (FFWC) of the Bangladesh Water Development Board.",
+      "context_backend": "ollama_local",
+      "text": "In Bangladesh, river level forecasts are produced by the Flood Forecasting and Warning Centre (FFWC) of the Bangladesh Water Development Board."
+    },
+    {
+      "chunk_id": "06_warning_levels#1",
+      "section": "Where forecasts come from",
+      "chars": 172,
+      "context": "From the FloodLens guide 'Understanding River Flood Warning Levels', section 'Where forecasts come from'. In Bangladesh, FloodLens uses gauge readings and rainfall forecasts to predict when a river station will reach its danger level and how the floodwaters will spread.",
+      "context_backend": "ollama_local",
+      "text": "FloodLens uses gauge readings and rainfall forecasts to estimate when a river station will cross its danger level and how the water will spread through the local landscape."
+    },
+    {
+      "chunk_id": "06_warning_levels#2",
+      "section": "Levels used by FloodLens",
+      "chars": 192,
+      "context": "From the FloodLens guide 'Understanding River Flood Warning Levels', section 'Levels used by FloodLens'. In Bangladesh, the danger level for river gauges indicates water levels where flooding of the surrounding area is expected, while the severe level predicts widespread and deep flooding.",
+      "context_backend": "ollama_local",
+      "text": "The danger level is the water level at a gauge above which flooding of the surrounding area is expected. FloodLens also uses a severe level, above which widespread and deep flooding is likely."
+    },
+    {
+      "chunk_id": "06_warning_levels#3",
+      "section": "Levels used by FloodLens",
+      "chars": 242,
+      "context": "From the FloodLens guide 'Understanding River Flood Warning Levels', section 'Levels used by FloodLens'. The risk level for each building is determined by how much time remains until water reaches it, categorized as CRITICAL for 10 hours or less, HIGH for up to 24 hours, WATCH for more than 24 hours within the forecast window, and SAFE if no flooding is forecast within 72 hours.",
+      "context_backend": "ollama_local",
+      "text": "For each building, the time until water reaches it decides its risk level: CRITICAL for 10 hours or less, HIGH for up to 24 hours, WATCH for more than 24 hours inside the forecast window, and SAFE when no flooding is forecast within 72 hours."
+    },
+    {
+      "chunk_id": "06_warning_levels#4",
+      "section": "Uncertainty",
+      "chars": 211,
+      "context": "From the FloodLens guide 'Understanding River Flood Warning Levels', section 'Uncertainty'. Every forecast from FloodLens includes an uncertainty band, represented by plus or minus metres. If the upper end of this band touches the danger level, households should start preparing immediately.",
+      "context_backend": "ollama_local",
+      "text": "Every forecast carries an uncertainty band, shown as plus or minus metres. When the upper end of the band crosses the danger level, households should already prepare, even if the central forecast stays below it."
+    },
+    {
+      "chunk_id": "06_warning_levels#5",
+      "section": "Rainfall",
+      "chars": 203,
+      "context": "From the FloodLens guide 'Understanding River Flood Warning Levels', section 'Rainfall'. A day after heavy rainfall in upstream regions like Meghalaya and Assam, Bangladesh's rivers can rise, prompting rapid updates to flood warnings.",
+      "context_backend": "ollama_local",
+      "text": "Heavy rainfall upstream, including in India's Meghalaya and Assam, can raise rivers in north-eastern Bangladesh within a day. A forecast can therefore worsen quickly, and alerts are re-issued every hour."
+    }
+  ]
+}
