@@ -19,6 +19,7 @@ import hashlib
 import json
 import os
 import re
+import time
 import urllib.request
 
 import numpy as np
@@ -183,7 +184,7 @@ class Embedder:
         self.backend = "hashing"
         if self.use_ollama:
             try:
-                self._ollama_embed(["probe"])
+                self._dim = self._ollama_embed(["probe"]).shape[1]
                 self.backend = f"ollama:{self.model}"
             except Exception:
                 self.use_ollama = False
@@ -198,12 +199,30 @@ class Embedder:
         norms[norms == 0] = 1.0
         return vecs / norms
 
+    @property
+    def dim(self) -> int | None:
+        return getattr(self, "_dim", None) if self.use_ollama else HASH_DIM
+
     def embed(self, texts: list[str]) -> np.ndarray:
+        if not self.use_ollama:
+            return hashing_embed(texts) if texts else np.zeros((0, HASH_DIM), dtype=np.float32)
         if not texts:
-            return np.zeros((0, HASH_DIM), dtype=np.float32)
-        if self.use_ollama:
+            return np.zeros((0, self.dim or HASH_DIM), dtype=np.float32)
+        # Once this embedder has committed to Ollama vectors (e.g. 768-d for
+        # nomic-embed-text) it must never hand back 512-d hashing vectors for a
+        # later call: a single transient Ollama timeout used to silently mix
+        # dimensions, and DuckDB's cosine search then failed with
+        # "list dimensions must be equal". Retry, then fail loudly instead.
+        last_exc: Exception | None = None
+        for attempt in range(3):
             try:
-                return self._ollama_embed(texts)
-            except Exception:
-                pass
-        return hashing_embed(texts)
+                vecs = self._ollama_embed(texts)
+                self._dim = vecs.shape[1]
+                return vecs
+            except Exception as exc:  # timeout / model reload / busy machine
+                last_exc = exc
+                time.sleep(2 * (attempt + 1))
+        raise RuntimeError(
+            f"Ollama embedding with {self.model} failed after 3 attempts ({last_exc}); "
+            "refusing to fall back to hashing vectors mid-run (dimension mismatch)."
+        )

@@ -93,3 +93,40 @@ def test_alerts_with_rag_still_work_offline(rag):
     alerts = generate_alerts_for_critical(impacts, limit=3, use_api=False, rag=rag)
     assert len(alerts) == 3
     assert all(a.source == "template_fallback" for a in alerts)
+
+
+def test_vector_store_rejects_mixed_embedding_dimensions():
+    """Regression: a 768-d query against a 512-d index must fail clearly,
+    not deep inside DuckDB's cosine-similarity call."""
+    import numpy as np
+    from floodlens.rag.store import VectorStore
+    from floodlens.rag.chunking import Chunk
+    store = VectorStore(":memory:")
+    chunks = [Chunk(f"d#{i}", "d", "D", "S", f"text {i}") for i in range(3)]
+    store.add(chunks, llm.hashing_embed([c.text for c in chunks]))
+    assert store.search(llm.hashing_embed(["text 1"])[0], k=1)[0][0] == 1
+    with pytest.raises(ValueError, match="dims"):
+        store.search(np.ones(768, dtype=np.float32), k=1)
+
+
+def test_ollama_embedder_never_falls_back_to_hashing_mid_run(monkeypatch):
+    """Regression: one transient Ollama failure used to return 512-d hashing
+    vectors while the index held 768-d Ollama vectors."""
+    import numpy as np
+    monkeypatch.setattr(llm.time, "sleep", lambda s: None)
+    calls = {"n": 0}
+
+    def flaky(self, texts):
+        calls["n"] += 1
+        if calls["n"] == 2:  # first embed after the probe fails once, then recovers
+            raise TimeoutError("busy")
+        return np.ones((len(texts), 768), dtype=np.float32) / np.sqrt(768)
+
+    monkeypatch.setattr(llm.Embedder, "_ollama_embed", flaky)
+    e = llm.Embedder(prefer_ollama=True)
+    assert e.embed(["a", "b"]).shape == (2, 768)
+
+    monkeypatch.setattr(llm.Embedder, "_ollama_embed",
+                        lambda self, t: (_ for _ in ()).throw(TimeoutError("down")))
+    with pytest.raises(RuntimeError, match="dimension mismatch"):
+        e.embed(["c"])

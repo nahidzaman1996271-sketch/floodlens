@@ -129,6 +129,10 @@ def _parse_llm_json(raw: str, impact) -> tuple[str, str]:
         data = json.loads(raw)
         return data.get("en", raw), data.get("bn") or _template_fallback_bn(impact)
     except Exception:
+        if raw.startswith("{"):
+            # Truncated / malformed JSON (e.g. hit the token cap): don't show
+            # raw JSON to residents -- an empty message makes the caller fall back.
+            return "", _template_fallback_bn(impact)
         return raw, _template_fallback_bn(impact)
 
 
@@ -152,9 +156,13 @@ def _claude_alert(impact, rag_context: dict | None = None) -> Alert | None:
 
 
 def ollama_chat(messages: list[dict], model: str | None = None, host: str | None = None,
-                timeout: float = 60.0) -> str:
+                timeout: float | None = None) -> str:
     """Call a local Ollama server's /api/chat endpoint (JSON mode, no streaming)
-    using only the standard library. Returns the assistant message text."""
+    using only the standard library. Returns the assistant message text.
+    timeout defaults to OLLAMA_TIMEOUT (seconds, default 120): CPU-only or
+    low-RAM machines can need well over a minute for the first token."""
+    if timeout is None:
+        timeout = float(os.environ.get("OLLAMA_TIMEOUT", "120"))
     host = (host or os.environ.get("OLLAMA_HOST") or OLLAMA_DEFAULT_HOST).rstrip("/")
     if not host.startswith("http"):
         host = "http://" + host
@@ -163,7 +171,11 @@ def ollama_chat(messages: list[dict], model: str | None = None, host: str | None
         "messages": messages,
         "format": "json",
         "stream": False,
-        "options": {"temperature": 0.2},
+        # Small models in JSON mode can loop on one phrase (seen with qwen2.5:3b
+        # writing Bangla) and never close the object: penalise repeats and cap
+        # the length so a runaway reply fails fast and falls back cleanly.
+        "options": {"temperature": 0.2, "repeat_penalty": 1.15,
+                    "num_predict": int(os.environ.get("OLLAMA_NUM_PREDICT", "1024"))},
     }).encode("utf-8")
     req = urllib.request.Request(f"{host}/api/chat", data=body,
                                  headers={"Content-Type": "application/json"})

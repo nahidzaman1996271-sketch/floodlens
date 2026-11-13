@@ -1,0 +1,46 @@
+{
+  "runtime": "ollama",
+  "ollama_version": "0.40.16",
+  "model": "qwen2.5:3b",
+  "machine": "Windows AMD64",
+  "alerts_generated_locally": 3,
+  "total_seconds": 81.88,
+  "alerts": [
+    {
+      "building_id": "B0002",
+      "risk_level": "CRITICAL",
+      "message": "The flood is expected within one hour. Please leave immediately for the assigned shelter at Char Bandar Primary School Shelter, which is about two kilometers away. People come before animals; please do not go back for livestock. Pack essential items such as national ID cards, prescription medicine, oral rehydration salts, drinking water, dry food, a torch, and cash in sealed plastic bags. Access to Village Access Road 1 will be closed soon due to flooding. Stay safe.",
+      "source": "ollama_local",
+      "message_bn": "সুমার বন্ধুগণকে জানাতে যা আপনি করতে হবেন: ফলশ্বাদটি এক ঘণ্টা পর্যন্মধ্যে সমস্ত থালিগুলো জলে ভরে যাওয়ার আগেই অপরাধশি শহরতলি চার বন্দর প্রাইমারি ছবিনামকে সুরক্ষা করতে যাওয়ার আছে। অপরাধশি শহরতলি চার বন্দর প্রাইমারিজ ছবিনামকে সুরক্ষা করতে যাওয়ার আছে। অপরাধশি শহরতলি চার বন্দর প্রাইমারিজ ছবিনামকে সুরক্ষা করতে যাওয়ার আছে। অপরাধশি শহরতলি চার বন্দর প্রাইমারিজ ছবিনামকে সুরক্ষা করতে যাওয়ার আছে। অপরাধশি শহরতলি চার বন্দর প্রাইমারিজ ছবিনামকে সুরক্ষা করতে যাওয়ার আছে।",
+      "rag_sources": [
+        "01_household_evacuation#0",
+        "04_livestock_and_assets#3",
+        "01_household_evacuation#4"
+      ]
+    },
+    {
+      "building_id": "B0003",
+      "risk_level": "CRITICAL",
+      "message": "There is critical flooding risk near your home. The nearest shelter, Char Bandar Primary School Shelter, is 2.2 km away with capacity for up to 400 people. Please leave immediately and take essential items such as ID cards, medicine, drinking water, torches, and cash. Follow the assigned route or use an alternative if Village Access Road 1 becomes impassable in about one hour. Stay safe.",
+      "source": "ollama_local",
+      "message_bn": "আপনার ঘরের নিকট অস্তিবা হচ্ছে এবং সুগমভাবে পরিষ্কার নয়। আপনাদের নিকটতম শক্তি অফিস প্রাইড শিল্ড শক্তি অফিস 2.2 কিমি উত্তরে আছে, যা বোঝাচ্ছে 400 জনের পরিষ্কার। এখন খুবই সময়ে নিয়ে যাওয়া উচিৎ, আপনাদের ঘরটি অস্তিবা হলে পথগates কখনও খোলা থাকবে না। এই শক্তি অফিসে আপনাদের জন্য উত্তম বস্তু রাখুন, মহাপরিষ্কার ভবনের লিনিয়ার, স্টাডি এড অফিস, আপনাদের জন্য বসতির উদ্দয়ক পুল, মহাপরিষ্কার ভবনের লিনিয়ার অফিস।",
+      "rag_sources": [
+        "01_household_evacuation#0",
+        "04_livestock_and_assets#3",
+        "01_household_evacuation#4"
+      ]
+    },
+    {
+      "building_id": "B0004",
+      "risk_level": "CRITICAL",
+      "message": "There is critical flooding risk near your home. The nearest shelter, Char Bandar Primary School Shelter, is 1.63 km away with a capacity of 400 people. Please leave immediately and take essential items as instructed: national ID cards, land and school documents in a sealed plastic bag, all prescription medicine, oral rehydration salts, drinking water, dry food such as chira and muri, a torch, a charged phone and some cash. Do not try to carry heavy furniture or livestock. Access road Village Access Road 1 will become impassable soon; consider an alternative route if necessary.",
+      "source": "ollama_local",
+      "message_bn": "স্থায়ী বাড়িতে ক্রিপটিক জলবাত সমস্যা আছে। নিকটসন্ধান শক্তিমান ছাঠালি পরীপ বিদ্যালয় শক্তিমান 400 জনের সম্ভবত্তা। আজকল এই উদ্দেশ্যটি পাঠানো হচ্ছে: রাষ্ট্রিক ইড বাজার, লাঙ্গ ও শিক্ষা অনুযায়ী একটি সম্পূর্ণ মেসজ: নাতন ইড, লাঙ্গ ও শিক্ষা ডাটাবইজ এবং একটি চার্ট অফ সম্পূর্ণ মেসজ: নাতন ইড, লাঙ্গ ও শিক্ষা ডাটাবইজ। আবশ্যক উপকরণগুলি সঠিকভাবে পেতে হয়: রাজনৈর ইড, লাঙ্গ ও শিক্ষা ডাটাবইজ। আবশ্যক উপকরণগুলি সঠিকভাবে পেতে হয়: রাজনৈর ইড, লাঙ্গ ও শিক্ষা ডাটাবইজ। আবশ্যক উপকরণগুলি সঠিকভাবে পেতে হয়: রাজনৈর ইড, লাঙ্গ ও শিক্ষা ডাটাবইজ।",
+      "rag_sources": [
+        "01_household_evacuation#0",
+        "04_livestock_and_assets#3",
+        "01_household_evacuation#4"
+      ]
+    }
+  ]
+}
