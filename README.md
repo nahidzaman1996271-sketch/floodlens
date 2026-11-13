@@ -296,6 +296,27 @@ Interactive OpenAPI docs will be available at [http://127.0.0.1:8000/docs](http:
 
 ---
 
+## 🤖 Local LLM Alerts with Ollama (offline mode)
+
+Alert drafting tries backends in order: **Claude API → local Ollama model → deterministic template**. The Ollama path lets a union parishad office generate bilingual (EN + BN) alerts on a laptop with no internet.
+
+```bash
+ollama pull qwen2.5:3b              # ~1.9 GB, Q4_K_M quantization, runs on CPU
+python scripts/run_ollama_alerts.py # writes results/ollama_alerts_sample.json
+# or enable it for the whole pipeline / API:
+OLLAMA_HOST=http://localhost:11434 python scripts/run_demo.py
+```
+
+Set `OLLAMA_MODEL` to use another model (e.g. `llama3.2:3b`). Alerts produced this way carry `source: "ollama_local"`.
+
+## 🔁 n8n Workflow Automation
+
+[`workflows/floodlens_n8n_workflow.json`](workflows/floodlens_n8n_workflow.json) is an n8n workflow that runs **every hour**: it calls the live `/predict` endpoint, checks whether the danger level will be crossed within 12 hours, and if so pulls the top 5 alerts from `/alerts`, formats a bilingual digest for the union disaster-management committee, and posts it to a Slack / Discord / Telegram webhook (enable the last node and paste your webhook URL).
+
+```bash
+npx n8n            # open http://localhost:5678 → Workflows → Import from file
+```
+
 ## 🔌 MCP Server (Model Context Protocol)
 
 FloodLens also ships an **MCP server** (`floodlens/mcp_server.py`, built on the official `mcp` Python SDK v2) so any MCP host (Claude Code, Claude Desktop, or a custom agent) can query household flood risk directly as tools. It reuses the exact same cached pipeline as the REST API, so the numbers always match.

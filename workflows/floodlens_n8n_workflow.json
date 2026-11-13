@@ -1,0 +1,268 @@
+{
+  "name": "FloodLens — hourly flood check & bilingual alerts",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "cf176aeb-8bd8-5f36-86ed-1753e7cd591c",
+      "name": "Every hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "83db55ed-ef2b-5f72-8f29-80497c34760d",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://floodlens-api-vq31.onrender.com/predict",
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "8c20cc45-f5f9-5d5a-8cce-86150d7925ba",
+      "name": "GET /predict",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        100
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Decide whether the forecast warrants pushing alerts out.\nconst p = $input.first().json;\nconst THRESHOLD_HOURS = 12; // alert if danger level is crossed within 12h\nconst h = p.hours_to_danger_level;\nconst s = p.impact_summary || {};\nconst shouldAlert = h !== null && h !== undefined && h <= THRESHOLD_HOURS;\nreturn [{\n  json: {\n    should_alert: shouldAlert,\n    hours_to_danger_level: h,\n    hours_to_severe_level: p.hours_to_severe_level,\n    buildings_at_risk: s.buildings_at_risk,\n    total_buildings: s.total_buildings,\n    buildings_critical_lt_10h: s.buildings_critical_lt_10h,\n    roads_inaccessible: s.roads_inaccessible,\n    checked_at: new Date().toISOString(),\n  },\n}];"
+      },
+      "id": "8f59ac09-1bae-539b-91d9-9ab41e19c5ea",
+      "name": "Decide: alert needed?",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.should_alert }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "23acb162-6996-566b-94f0-69c03929d6df",
+      "name": "Should alert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://floodlens-api-vq31.onrender.com/alerts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 90000
+        }
+      },
+      "id": "6bdadd69-d3d6-5b8c-8bc9-7612eccbd631",
+      "name": "GET /alerts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        0
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build one bilingual digest for the union disaster-management committee.\nconst d = $('Decide: alert needed?').first().json;\nconst alerts = $input.first().json.alerts || [];\nconst lines = alerts.map(a =>\n  `• ${a.building_id} [${a.risk_level}]\\n  EN: ${a.message}\\n  BN: ${a.message_bn}`\n);\nconst header =\n  `🌊 FloodLens alert — danger level in ~${d.hours_to_danger_level}h, ` +\n  `severe in ~${d.hours_to_severe_level}h.\\n` +\n  `${d.buildings_at_risk}/${d.total_buildings} buildings at risk, ` +\n  `${d.buildings_critical_lt_10h} critical (<10h), ${d.roads_inaccessible} roads cut off.`;\nreturn [{\n  json: {\n    text: `${header}\\n\\n${lines.join('\\n\\n')}`,\n    alert_count: alerts.length,\n    sources: [...new Set(alerts.map(a => a.source))],\n    checked_at: d.checked_at,\n  },\n}];"
+      },
+      "id": "08047cfd-4b60-5a0b-8686-3fcdecba0350",
+      "name": "Format bilingual digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hooks.slack.com/services/REPLACE/ME",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.text, content: $json.text }) }}",
+        "options": {}
+      },
+      "id": "d4fa15c1-f379-5b09-aafc-88182603625f",
+      "name": "Send to chat webhook",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        0
+      ],
+      "disabled": true,
+      "notes": "Enable and paste a Slack / Discord / Telegram-bot webhook URL to deliver alerts."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Forecast below threshold: log and stop.\nconst d = $input.first().json;\nreturn [{ json: { status: 'no_alert', hours_to_danger_level: d.hours_to_danger_level, checked_at: d.checked_at } }];"
+      },
+      "id": "98205ac4-77e6-5bb2-83b7-2218dfaac960",
+      "name": "No alert — log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        220
+      ]
+    }
+  ],
+  "connections": {
+    "Every hour": {
+      "main": [
+        [
+          {
+            "node": "GET /predict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "GET /predict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /predict": {
+      "main": [
+        [
+          {
+            "node": "Decide: alert needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide: alert needed?": {
+      "main": [
+        [
+          {
+            "node": "Should alert?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should alert?": {
+      "main": [
+        [
+          {
+            "node": "GET /alerts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No alert — log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET /alerts": {
+      "main": [
+        [
+          {
+            "node": "Format bilingual digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format bilingual digest": {
+      "main": [
+        [
+          {
+            "node": "Send to chat webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Dhaka"
+  },
+  "pinData": {},
+  "tags": []
+}

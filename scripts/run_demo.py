@@ -79,7 +79,8 @@ def main():
     print("\n[5/6] Generating plain-language alerts for the most urgent buildings (Bilingual EN & BN)...")
     alerts = generate_alerts_for_critical(building_impacts, limit=5)
     for a in alerts:
-        source_tag = "[Claude API]" if a.source == "claude_api" else "[offline template]"
+        source_tag = {"claude_api": "[Claude API]", "ollama_local": "[Ollama local LLM]"}.get(
+            a.source, "[offline template]")
         print(f"\n      {source_tag} {a.building_id} ({a.risk_level}):")
         print(f"      EN: \"{a.message}\"")
         if getattr(a, "message_bn", ""):
