@@ -1,0 +1,68 @@
+======================================================================
+FloodLens — From Flood Warning to Flood Action
+======================================================================
+
+[1/6] Generating synthetic locality scenario (seeded, reproducible)...
+      Locality: Char Bandar Union (synthetic, haor-floodplain profile)
+      Grid: (60, 60), Buildings: 102, Roads: 3, Shelters: 2
+
+[2/6] Forecasting river water level (72h horizon)...
+      Current gauge level: 5.08 m (danger: 6.5 m, severe: 8.0 m)
+      Hours to danger level: 6.0
+      Hours to severe level: 13.0
+      Forecast uncertainty: +/- 0.2 m
+
+[3/6] Propagating flood extent across terrain (hydrologically-connected fill)...
+      Computed flood extent at 25 sampled hours
+
+[4/6] Assessing impact on buildings and roads...
+
+      --- IMPACT SUMMARY ---
+      91/102 buildings at risk (89.2%)
+      89 buildings CRITICAL (flood predicted within 10h)
+      1 medical facilities at risk
+      2/3 roads predicted inaccessible
+
+      --- ROAD-LEVEL DETAIL ---
+      Village Access Road 1: INACCESSIBLE (impassable in 1h)
+      Village Access Road 2: INACCESSIBLE (impassable in 1h)
+      Upazila Connector Road (high ground): AT_RISK (impassable in 13h)
+
+[5/6] Generating plain-language alerts for the most urgent buildings (Bilingual EN & BN)...
+      RAG index: 30 chunks from 6 docs, embeddings=ollama:nomic-embed-text, graph={'nodes': 121, 'edges': 419}
+
+      [Ollama local LLM] B0002 (CRITICAL):
+      EN: "There is critical flooding risk near your location. Please leave immediately for the Char Bandar Primary School Shelter at a distance of approximately 2 km away. Move children, elderly, pregnant women, and disabled individuals to safety first. Pack essential items such as ID cards, prescription medicines, drinking water, dry food, torches, charged phones, and cash in sealed plastic bags. Access road Village Access Road 1 will become impassable soon; use an alternative route if necessary. Stay calm and follow the guidance provided."
+      BN: "স্থায়ী জলবাহাদুরের ক্ষতি সম্ভব আছে তথা পরিবেশটি নিচে। অনুগ্রহ করে, এখনই যাওয়ার জন্য Char Bandar Primary School Shelter থেকে 2 কিমি দূरে ছোটবসত পণ্ডিত শিক্ষা সহকারী বানালির উপর যাওয়ার আলাহ্মদ। অনুগ্রহ করে, প্রতিটি শিশু, বাড়িবানী, গ্রামকথায় জমা থাকা আসলা সন্তান, এবং পরিণত মেয়েদের বা অপরাধী লোকদের যাওয়ার জন্য আগেই সমস্ত উচিৎ পণ্ডিত, চাকরি মাহফ বা অপরাধী লোকদের এবং শিশুদের যাওয়ার আলাদা নেই। প্রতিটি সমস্ত জনপ্রিয়মোহন কাঠ, বড় মাছ, চিহ্নকৃত ফল এবং অর্থ পেটেন্ড সমস্ত দৈদা জল যাওয়ার আলাদা। বহুত কালে নিচে একটি উপশিক্ষণ রেডিও সমস্ত পরিমাণ জলবাহাদুরের আগে যাওয়ার। অনুগ্রহ করে, বাড়িতে শক্তিশালী ফসল এবং পণ্ডিত নিজেদের যাওয়ার।"
+
+      [Ollama local LLM] B0003 (CRITICAL):
+      EN: "There is critical flooding risk (1 hour until flood). You have been assigned to Char Bandar Primary School Shelter. The shelter is 2.2 km away. Roads will be impassable in about an hour. Move children, older people, pregnant women and disabled first. Pack essential items such as ID cards, medicine, water, food, torches, phone with cash, and meet at the assigned shelter. Follow guidance from authorities for further instructions."
+      BN: "ক্রিমিনাল জলবায়ুমন্ডির কেন্দ্র (CRITICAL) পরিষড়িত বাসস্থান অপরাধী শিক্ষা মহাংয়ন্ত্য (Char Bandar Primary School) শিল্পে 2.2 কিলোমিটার দূর। সড়কটি আগে বন্ধ হবে, এখন নিজেদের মত শিল্পে যাওয়া উচিত। কলমুদ্রাগুলি, স্টেট ইড বইগুলি, ডানসন এবং মহাপরিষকের অনুমতি দিয়ে চাকরদের জন্য সুপারভাইজড বইগুলি, আরও একটা পানি ও খাদ্য উপযোগী গুলিকে শিল্পে সংগ্রহ করতে। বড়দের, মাতা-মাঘির এবং অন্য আসকন্ডাগুলি উপরিস্থিত হওয়া পর্যন্ত শিল্পে যাওয়া নেই। এমনকি বাইট করতে চাও, আসলো জলবায়ুমন্ডির সময়ে শিল্পে অপরাধী না হও।"
+
+      [Ollama local LLM] B0004 (CRITICAL):
+      EN: "There is critical flooding risk for your household in 1 hour. Please evacuate immediately to Char Bandar Primary School Shelter at 1.63 km away. Roads leading there will be closed soon. Prioritize moving children, older people, pregnant women and those with disabilities first. Pack essential items such as ID cards, medicine, water, food, torches, phone chargers, and cash in a sealed plastic bag for safekeeping."
+      BN: "স্থায়ী বন্ধুরা আপনাদের ঘরটির ক্রিপ্টিক ফলমান গভোবাসন অতি 1 ঘণ্টাই। তৎকালীন শহর চাৱড়া ব্যাংকার প্রিমেরিক শিক্ষা স্থানটি 1.63 কিমি দূরে। তথন আপনি অতি সময়েই বাহিয়ে যাওয়ার প্রশস্ত ছবি চালু করুণ। শহরটি পর্যন্মত থাকলে আপনাদের বিনা সময়েই একটি ফাইস্ট্র অবশিষ্ট হবে। তথন প্রথমে শিশু, উচ্চ মহিলা ও বিভিন্ন দর্জনের সাথে আপনি অতি সময়েই যাত্রা করবেন। পুলক, মহামাধব বিষ, ভালোভাবে চিহ্নিত জল, গাছি ফসল, ট্যাশ, সংযোগ করা আমেরকা এবং মুখ্য পদক।"
+
+      [Ollama local LLM] B0005 (CRITICAL):
+      EN: "There is critical flooding risk near your location within the next hour. Please leave immediately for Char Bandar Primary School Shelter at 1.54 km away to ensure safety of you and your family. Move children, older people, pregnant women, and disabled individuals first as roads are expected to be impassable soon. Pack essential items such as ID cards, medicine, drinking water, torches, phone with charge, and cash in a sealed plastic bag for immediate use at the shelter."
+      BN: "স্থায়ী বন্টনের পুত্র সহযোগিতা করে আপনাদের জন্য একটি গুরুত্বপূর্ণ নিমেশবছর থেকে প্রায় এক ঘণ্টা আসল। সচেষ্ট শহরটি Char Bandar Primary School Shelter (1.54 কিলোমিটার দূর) থেকে বের হওয়া পর্যন্ত সবচেয়ে শক্তিশালী অপশন। আপনাদের কলম, মহিলা ও বড় জনতারা প্রথমে সবচেয়ে গুরুত্বপূর্ণভাবে যাত্রা করুন, আগেই দুর্ঘটিন পথ এবং সমৃদ্ধি থেকে অস্ফীধ হওয়া যাবে। শহরটি তথা কলম ও মহিলাদের প্রতি একটি সবজি জন্য অপশন থানা হচ্ছে Char Bandar Primary School Shelter।"
+
+      [Ollama local LLM] B0006 (CRITICAL):
+      EN: "There is critical flooding risk near your location within the next hour. You have been assigned to Char Bandar Primary School Shelter for evacuation. The shelter is approximately 2.23 kilometers away. Please move children, older people, pregnant women and those with disabilities first as roads may become impassable soon. Pack essential items such as national ID cards, prescription medicine, oral rehydration salts, drinking water, dry food like chira and muri, a torch, charged phone, and some cash in sealed plastic bags. Leave immediately for the shelter to ensure safety."
+      BN: "স্থায়ী বন্টনের কিছুটা আগে তোমাদের সম্পর্কে জানা গেছে, এখন খবরের ঘটনা অপরদিকে। বড়লক ও মহিলারা যৌথভাবে স্থায়ী বন্টনের পাশাপাশি নিজেদের অপরিচিত ছাউনশিক্ষক এলাকা (Char Bandar Primary School Shelter)তে সংযুক্তভাবে আগেই যাওয়া প্রথমের জন্য নির্দিষ্ট হয়েছে। এটি 2.23 কিলোমিটার আসল দূরত্বেই। তুমরা স্থায়ীবন্ডনের পথগুলি অপরিচিত হওয়ার কিছুক্ষণ আগে নিজেদের বসতে থাকা সম্ভব। এই পথগুলি অপরিচিত হওয়ার মধ্যে শিক্ষক ছাউনশিক্ষক এলাকার (Char Bandar Primary School Shelter)তে সংযুক্তভাবে আগেই যাওয়ার প্রথমের জন্য নির্দিষ্ট হয়েছে। এটি 2.23 কিলোমিটার আসল দূরত্বেই। তুমরা স্থায়ীবন্ডনের পথগুলি অপরিচিত হওয়ার কিছুক্ষণ আগে নিজেদের বসতে থাকা সম্ভব।"
+
+[6/6] Rendering flood maps and impact table...
+      Wrote D:\cloudcamp hackathon\algorithm\floodlens_project\scripts\..\results\flood_map_hour_1.png
+      Wrote D:\cloudcamp hackathon\algorithm\floodlens_project\scripts\..\results\flood_map_hour_25.png
+      Wrote D:\cloudcamp hackathon\algorithm\floodlens_project\scripts\..\results\flood_map_hour_72.png
+      Wrote D:\cloudcamp hackathon\algorithm\floodlens_project\scripts\..\results\impact_table_top15.png
+      Wrote D:\cloudcamp hackathon\algorithm\floodlens_project\scripts\..\results\prediction_export.json
+      Stored run dc05a4420342 in D:\cloudcamp hackathon\algorithm\floodlens_project\scripts\..\results\floodlens.duckdb
+risk_level  buildings  earliest_flood_h
+  CRITICAL         89                 1
+     WATCH          2                28
+      SAFE         11              <NA>
+
+======================================================================
+Demo complete. See results/ for maps, table, and JSON export.
+======================================================================
