@@ -1,0 +1,182 @@
+{
+  "machine": "Windows AMD64",
+  "ollama_host": "http://localhost:11434",
+  "models": {
+    "qwen2.5:3b": {
+      "summary": {
+        "json_ok": 1.0,
+        "hours_faithful": 1.0,
+        "shelter_named": 1.0,
+        "has_bangla": 1.0,
+        "avg_seconds": 23.9
+      },
+      "samples": [
+        {
+          "building_id": "B0002",
+          "seconds": 30.4,
+          "json_ok": true,
+          "hours_faithful": true,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "There is critical flooding risk near your location within the next hour. Please evacuate immediately with all family members and essential documents. The nearest shelter at Char Bandar Primary School Shelter is 2.07 km away, which can accommodate up to 400 people. Access road Village Access Road 1 will be impassable in about an hour due to flooding. Pack emergency supplies including prescription m",
+          "bn": "স্থায়ী বন্ধুকের সম্পর্কে অতি জটিল নোডফল হওয়া আছে, এই মাঝখানে 1 ঘণ্টার মধ্যে। তথন বরকল করতে প্রশস্ত সহিল থেকে অবতরণ করুন, এই নির্দিষ্ট সহিলটি 2.07 কিমাইল উপরে আছে। তথন পরম বিভাগসমূহকে অবতরণ করা যাওয়ার জন্য সব নির্দিষ্ট উপজীবন আদালত, পড়াশোনা একটি বই, মেলা অথচ তৈদের কম্পিয়ন সহ নিজের উপজীবন আদালত ও দুধ শক্তি বস্তুগুলি এখনই রাখুন।",
+          "error": null
+        },
+        {
+          "building_id": "B0003",
+          "seconds": 23.8,
+          "json_ok": true,
+          "hours_faithful": true,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "There is critical flooding risk (1 hour) at your location B0003. Please evacuate immediately with all family members. The nearest shelter is Char Bandar Primary School Shelter, approximately 2.2 km away. Follow the guidance to pack essential items and meet as a group outside of the village before nightfall. Access road Village Access Road 1 will be closed in about an hour due to flooding. Please c",
+          "bn": "বিস্ফোর প্ৰকাশনটি বছেল B0003 অঞ্চলতকে কষা আমদানি থেকে মুগ্ধ হও। 1 ঘণ্টা পর্যন্ত এখানটিতে বিস্ফোর অস্তিষ্কতা আছে। প্ৰকাশনটি মুগ্ধ হও: দলবহুলভূমি Char Bandar Primary School Shelter থেকে 2.2 কিলোমিটা উপরে যাওয়া প্ৰতিষ্ঠানটি সন্ধ্যাবেলাতে মিশেই একদলে অবস্থান করুন। আপনাদের জন্য প্ৰথমতঃ জনগণ, সেখানে বহুধাতিগোলা এবং অসীম মালদের উপযোগী ক্ষেত্ৰটি পরিচালনা করুন। বহুধাতিগোলা এবং অসীম মালদের উপযোগী স্থানটি প",
+          "error": null
+        },
+        {
+          "building_id": "B0004",
+          "seconds": 17.6,
+          "json_ok": true,
+          "hours_faithful": true,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "There is critical flooding risk (1 hour until flood) for your household. You are assigned to Char Bandar Primary School Shelter which is 1.63 km away. Leave immediately with essential documents, prescription medicines, and dry food items. Due to road closure on Village Access Road 1 in about an hour, use the alternative shelter at Char Bandar Primary School if you cannot reach your designated loca",
+          "bn": "বিস্ফোর প্ৰকাশে আপনাদের বাড়িতে কমলাম। আপনদের নিযুক্ত ছিলেন Char Bandar Primary School Shelter, 1.63 কিমি পথে। অস্থষা সংখ্যাটি বহন করতে এবং আপনদের নিজের দোকান, শিক্ষা ও প্ৰশাসন অধিকারসমুদ্ধার বহন করতে যাওয়ার আগেই তথাকথিত শিল্প থেকে নিরপত্তা। উল্লম্ব সড়ক Char Bandar Primary School Shelter অনুসরণ করা যাওয়াটি হবে, যদি আপনদের নিজে পথ পাবেন না।",
+          "error": null
+        }
+      ]
+    },
+    "llama3.2:3b": {
+      "summary": {
+        "json_ok": 0.67,
+        "hours_faithful": 0.67,
+        "shelter_named": 0.67,
+        "has_bangla": 0.67,
+        "avg_seconds": 175.1
+      },
+      "samples": [
+        {
+          "building_id": "B0002",
+          "seconds": 302.1,
+          "json_ok": false,
+          "hours_faithful": false,
+          "shelter_named": false,
+          "has_bangla": false,
+          "en": "",
+          "bn": "",
+          "error": "timed out"
+        },
+        {
+          "building_id": "B0003",
+          "seconds": 133.3,
+          "json_ok": true,
+          "hours_faithful": true,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "{'alert_message': 'CRITICAL flood alert! Move people immediately (140/400 capacity) from Char Bandar Primary School Shelter (2.2 km away). Leave livestock behind. Take essential documents, medicine, and emergency supplies with you.', 'priority_actions': ['Move people to shelter', 'Leave livestock behind', 'Take essential documents, medicine, and emergency supplies']}",
+          "bn": "{'alert_message': 'হাজার প্রতিরোধের সিদ্ধান্ত! চার বন্দর প্রাথমিক শালা (2.2 কিমি দূরে) এ 140/400 জন অভ্যন্তরীণ নিয়ে গিয়ে। পশু-সম্পত্তি ছেড়ে দিন। কার্যকরী চিহ্নিতক, ঔষধ, এবং অবস্থা-প্রতিরোধ উপকরণ নিন।', 'priority_actions': ['লোকদের শালায় চলে যাও', 'স্থানীয়তা ছেড়ে দিন', 'কার্যকরী চিহ্নিতক, ঔষধ, এবং অবস্থা-প্রতিরোধ উপকরণ']}",
+          "error": null
+        },
+        {
+          "building_id": "B0004",
+          "seconds": 89.8,
+          "json_ok": true,
+          "hours_faithful": true,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "{'alert_message': 'CRITICAL flood alert! Move people immediately (140 assigned) from B0004 household. Head to Char Bandar Primary School Shelter, 1.63 km away. Leave livestock and valuables behind. Take essential items: ID cards, documents, medicine, water, food, torch, phone, cash.', 'priority_actions': ['Move people immediately', 'Head to shelter with assigned capacity']}",
+          "bn": "{'alert_message': 'সামুদ্রিক ঝরেলা! B0004 হাউজহোল্ডের থেকে অনুষ্ঠিত 140 জনকে চার ব্যান্দর প্রাথমিক স্কুল শেল্টার, 1.63 কি.মি. দূরে নিয়ে যাও। বন্ধুপীড়া এবং সম্ভবত আহত হওয়ার ঝুঁকি থেকে রক্ষা করুন। লাইভস্টক, মূল্যবান পণ্য ছেড়ে দিন। অতিরিক্ত উপকরণ: এন.আই. কার্ড, গুরুত্বপূর্ণ চিহ্নিত দলা, মেডিসিন, জল, খাদ্য, টর্চ, ফোন, ক্ষয়িয়াশ এবং পেশাদার।', 'priority_actions': ['মানুষকে তাৎক্ষণিকভাবে চলে যেতে হ",
+          "error": null
+        }
+      ]
+    },
+    "gemma2:2b": {
+      "summary": {
+        "json_ok": 0.0,
+        "hours_faithful": 0.0,
+        "shelter_named": 0.0,
+        "has_bangla": 0.0,
+        "avg_seconds": 245.1
+      },
+      "samples": [
+        {
+          "building_id": "B0002",
+          "seconds": 302.6,
+          "json_ok": false,
+          "hours_faithful": false,
+          "shelter_named": false,
+          "has_bangla": false,
+          "en": "",
+          "bn": "",
+          "error": "timed out"
+        },
+        {
+          "building_id": "B0003",
+          "seconds": 302.4,
+          "json_ok": false,
+          "hours_faithful": false,
+          "shelter_named": false,
+          "has_bangla": false,
+          "en": "",
+          "bn": "",
+          "error": "timed out"
+        },
+        {
+          "building_id": "B0004",
+          "seconds": 130.4,
+          "json_ok": false,
+          "hours_faithful": false,
+          "shelter_named": false,
+          "has_bangla": false,
+          "en": "",
+          "bn": "",
+          "error": "HTTP Error 500: Internal Server Error"
+        }
+      ]
+    },
+    "phi3.5": {
+      "summary": {
+        "json_ok": 0.67,
+        "hours_faithful": 0.33,
+        "shelter_named": 0.67,
+        "has_bangla": 0.67,
+        "avg_seconds": 240.0
+      },
+      "samples": [
+        {
+          "building_id": "B0002",
+          "seconds": 302.8,
+          "json_ok": false,
+          "hours_faithful": false,
+          "shelter_named": false,
+          "has_bangla": false,
+          "en": "",
+          "bn": "",
+          "error": "timed out"
+        },
+        {
+          "building_id": "B0003",
+          "seconds": 270.9,
+          "json_ok": true,
+          "hours_faithful": false,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "Urgent Alert: Your home is at CRITICAL risk of flooding within an hour with the nearest shelter being Char Bandar Primary School Shelter located approximately 2 km away, and access road will be cut off soon. Immediately evacuate to this safe location carrying essential items such as ID cards (national or land), prescription medicine/oral rehydration salts for all family members including children ",
+          "bn": "আনতাম: স্বীক্রিকেল এপ্রিয়েজ: যہदুন্দোগে, आपकা ঘরে अफसरশীত होने में 10-খালी বিষয়ক खतर হै। 2.2 ওয়গুন্দোগে Char Bandar Primary School Shelter (সরকারী পশ্ত) মার্केबল, বিষয় অবস্যার হࡋে 2.04 ওয়গুন্দোগে। Access road Village Access Road 1 will be cut off soonest within an hour of this alert being issued, so it is crucial to evacuate immediately without delaying for livests or heavy furniture carrying.\n\n",
+          "error": null
+        },
+        {
+          "building_id": "B0004",
+          "seconds": 146.4,
+          "json_ok": true,
+          "hours_faithful": true,
+          "shelter_named": true,
+          "has_bangla": true,
+          "en": "Urgent: Your home is at CRITICAL risk of flooding in just an hour with the Village Access Road becoming impassable soon afterward (1 km away). Immediately head for Char Bandar Primary School Shelter. Prioritize leaving over saving possessions, pack essential items like ID documents and medicine only if time allows before evacuation.",
+          "bn": "আনতাম: সেখানের বিশ্বাসী পরিযুaufগুলোকে CRITICAL risk of flooding, boro chor nai (1.63 km)। Char Bandar Primary School Shelter-দিতে হಿছেন; prioritize evacuation over belongings - pack essential items like ID documents and medicine if time permits before leaving.",
+          "error": null
+        }
+      ]
+    }
+  }
+}
