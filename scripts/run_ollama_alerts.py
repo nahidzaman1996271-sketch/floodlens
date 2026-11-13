@@ -48,10 +48,15 @@ def main(limit: int = 3):
         sys.exit(1)
 
     print(f"Ollama {version} at {host}, model {model}")
-    building_impacts = run_pipeline()["building_impacts"]
+    result = run_pipeline()
+    building_impacts = result["building_impacts"]
+
+    from floodlens.rag.retriever import FloodRAG
+    rag = FloodRAG(use_llm=False).build()  # fast index; contextual LLM indexing is in build_rag_index.py
+    rag.attach_graph(result)
 
     start = time.perf_counter()
-    alerts = generate_alerts_for_critical(building_impacts, limit=limit, use_api=False, use_ollama=True)
+    alerts = generate_alerts_for_critical(building_impacts, limit=limit, use_api=False, use_ollama=True, rag=rag)
     elapsed = time.perf_counter() - start
 
     for a in alerts:

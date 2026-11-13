@@ -309,6 +309,42 @@ OLLAMA_HOST=http://localhost:11434 python scripts/run_demo.py
 
 Set `OLLAMA_MODEL` to use another model (e.g. `llama3.2:3b`). Alerts produced this way carry `source: "ollama_local"`.
 
+Any **OpenAI-compatible local server** also works (llama.cpp `llama-server`, LM Studio, vLLM): set `LOCAL_LLM_BASE_URL=http://localhost:8080/v1`; alerts then carry `source: "openai_compatible_local"`.
+
+Compare small open-weight models on the alert task (JSON validity, number faithfulness, shelter named, real Bangla output, latency):
+
+```bash
+python scripts/compare_local_models.py qwen2.5:3b llama3.2:3b gemma2:2b phi3.5
+# -> results/local_model_comparison.json
+```
+
+## 📚 RAG: Grounded Alerts (Contextual + Hybrid + Graph RAG)
+
+Alerts are grounded in a small flood-preparedness knowledge base ([`floodlens/rag/knowledge/`](floodlens/rag/knowledge/), FloodLens-authored guidance, not official documents) and in a knowledge graph of the scenario.
+
+| Stage | Technique | Code |
+|---|---|---|
+| Chunking | **Variable / semantic chunking**: split where sentence-embedding distance spikes | `rag/chunking.py` |
+| Indexing | **Contextual Retrieval (Anthropic-style)**: an LLM writes a context header per chunk (Claude with prompt caching, or local Ollama) prepended before embedding and BM25 | `rag/contextual.py` |
+| Storage | Embeddings in **DuckDB** (`rag_chunks`, `FLOAT[]`, `list_cosine_similarity`) | `rag/store.py` |
+| Query | **HyDE**: hypothetical guidance passage embedded with the query | `rag/retriever.py` |
+| Search | **Hybrid search**: vector + BM25 fused with Reciprocal Rank Fusion | `rag/retriever.py`, `rag/bm25.py` |
+| Ranking | **LLM reranker**: 0-10 relevance score per candidate | `rag/retriever.py` |
+| Correction | **Corrective RAG**: weak results trigger a query rewrite, then a graph-topic fallback | `rag/retriever.py` |
+| Graph | **Knowledge graph + Graph RAG**: buildings, shelters, roads, risk levels and topics; 2-hop traversal yields facts like shelter load and "road closes before your house floods" | `rag/graph.py` |
+
+```bash
+ollama pull nomic-embed-text && ollama pull qwen2.5:3b
+OLLAMA_HOST=http://localhost:11434 python scripts/build_rag_index.py
+# -> results/rag_eval.json (hit@1 / hit@3 / MRR: naive vs contextual hybrid vs full pipeline)
+curl "http://localhost:8000/ask?q=shelter%20is%20almost%20full"
+curl "http://localhost:8000/buildings/B0002/context"
+```
+
+## ⚙️ GitHub Actions
+
+[`.github/workflows/floodlens-ci.yml`](.github/workflows/floodlens-ci.yml) runs the test suite on every push and PR, and every 6 hours re-runs the forecast pipeline and RAG evaluation, publishing maps, JSON and the DuckDB file as build artifacts.
+
 ## 🔁 n8n Workflow Automation
 
 [`workflows/floodlens_n8n_workflow.json`](workflows/floodlens_n8n_workflow.json) is an n8n workflow that runs **every hour**: it calls the live `/predict` endpoint, checks whether the danger level will be crossed within 12 hours, and if so pulls the top 5 alerts from `/alerts`, formats a bilingual digest for the union disaster-management committee, and posts it to a Slack / Discord / Telegram webhook (enable the last node and paste your webhook URL).

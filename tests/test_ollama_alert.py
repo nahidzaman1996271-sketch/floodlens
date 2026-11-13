@@ -63,3 +63,20 @@ def test_use_api_false_disables_ollama_by_default(monkeypatch, critical_impact):
     monkeypatch.setattr(claude_alert.urllib.request, "urlopen", should_not_be_called)
     alert = generate_alert(critical_impact, use_api=False)
     assert alert.source == "template_fallback"
+
+
+def test_openai_compatible_local_server_backend(monkeypatch, critical_impact):
+    """llama.cpp llama-server / LM Studio speak the OpenAI chat API."""
+    monkeypatch.setenv("LOCAL_LLM_BASE_URL", "http://localhost:8080/v1")
+    captured = {}
+
+    def fake_urlopen(req, timeout=None):
+        captured["url"] = req.full_url
+        content = json.dumps({"en": "Leave now.", "bn": "এখনই বের হন।"})
+        return _FakeResponse(json.dumps({"choices": [{"message": {"content": content}}]}).encode())
+
+    from floodlens.rag import llm
+    monkeypatch.setattr(llm.urllib.request, "urlopen", fake_urlopen)
+    alert = generate_alert(critical_impact, use_ollama=False)
+    assert alert.source == "openai_compatible_local"
+    assert captured["url"] == "http://localhost:8080/v1/chat/completions"

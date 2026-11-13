@@ -77,7 +77,12 @@ def main():
         print(f"      {r.name}: {r.status} (impassable in {h})")
 
     print("\n[5/6] Generating plain-language alerts for the most urgent buildings (Bilingual EN & BN)...")
-    alerts = generate_alerts_for_critical(building_impacts, limit=5)
+    from floodlens.rag.retriever import FloodRAG
+    rag = FloodRAG().build()
+    rag.attach_graph({"scenario": scenario, "building_impacts": building_impacts, "road_impacts": road_impacts})
+    print(f"      RAG index: {rag.build_info['chunks']} chunks from {rag.build_info['documents']} docs, "
+          f"embeddings={rag.build_info['embedding_backend']}, graph={rag.graph.stats()}")
+    alerts = generate_alerts_for_critical(building_impacts, limit=5, rag=rag)
     for a in alerts:
         source_tag = {"claude_api": "[Claude API]", "ollama_local": "[Ollama local LLM]"}.get(
             a.source, "[offline template]")

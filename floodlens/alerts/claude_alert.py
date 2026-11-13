@@ -17,7 +17,7 @@ from __future__ import annotations
 import os
 import json
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 OLLAMA_DEFAULT_HOST = "http://localhost:11434"
 OLLAMA_DEFAULT_MODEL = "qwen2.5:3b"
@@ -37,6 +37,9 @@ livestock/valuables).
 - Name the specific shelter and distance given.
 - No alarmist language beyond what the risk level warrants. CRITICAL = urgent and direct. \
 WATCH = informative, no panic.
+- If "facts" (from the FloodLens knowledge graph) or "guidance" (retrieved from the FloodLens \
+knowledge base) are provided, use them to choose and order the actions, and mention a road \
+closure or an alternative shelter if the facts say so. Never copy numbers that are not given.
 - Output JSON format with two keys: "en" and "bn"."""
 
 
@@ -47,6 +50,7 @@ class Alert:
     message: str
     source: str  # "claude_api", "ollama_local" or "template_fallback"
     message_bn: str = ""  # Bangla localized alert
+    rag_sources: list = field(default_factory=list)  # knowledge-base chunk ids used, if any
 
 
 def _template_fallback_bn(impact) -> str:
@@ -102,8 +106,8 @@ def _template_fallback(impact) -> str:
     )
 
 
-def _payload(impact) -> dict:
-    return {
+def _payload(impact, rag_context: dict | None = None) -> dict:
+    payload = {
         "building_id": impact.id,
         "type": impact.type,
         "hours_to_flood": impact.hours_to_flood,
@@ -112,6 +116,10 @@ def _payload(impact) -> dict:
         "distance_to_shelter_km": impact.distance_to_shelter_km,
         "priority": impact.priority,
     }
+    if rag_context:
+        payload["facts"] = rag_context.get("facts", [])
+        payload["guidance"] = rag_context.get("guidance", [])
+    return payload
 
 
 def _parse_llm_json(raw: str, impact) -> tuple[str, str]:
@@ -124,14 +132,14 @@ def _parse_llm_json(raw: str, impact) -> tuple[str, str]:
         return raw, _template_fallback_bn(impact)
 
 
-def _claude_alert(impact) -> Alert | None:
+def _claude_alert(impact, rag_context: dict | None = None) -> Alert | None:
     import anthropic
     client = anthropic.Anthropic()
     response = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=300,
         system=ALERT_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": json.dumps(_payload(impact))}],
+        messages=[{"role": "user", "content": json.dumps(_payload(impact, rag_context), ensure_ascii=False)}],
     )
     raw = "".join(
         block.text for block in response.content if getattr(block, "type", "") == "text"
@@ -164,10 +172,10 @@ def ollama_chat(messages: list[dict], model: str | None = None, host: str | None
     return data.get("message", {}).get("content", "")
 
 
-def _ollama_alert(impact) -> Alert | None:
+def _ollama_alert(impact, rag_context: dict | None = None) -> Alert | None:
     raw = ollama_chat([
         {"role": "system", "content": ALERT_SYSTEM_PROMPT},
-        {"role": "user", "content": json.dumps(_payload(impact))},
+        {"role": "user", "content": json.dumps(_payload(impact, rag_context), ensure_ascii=False)},
     ])
     en_msg, bn_msg = _parse_llm_json(raw, impact)
     if not en_msg:
@@ -176,7 +184,22 @@ def _ollama_alert(impact) -> Alert | None:
                  message=en_msg, source="ollama_local", message_bn=bn_msg)
 
 
-def generate_alert(impact, use_api: bool | None = None, use_ollama: bool | None = None) -> Alert:
+def _local_openai_alert(impact, rag_context: dict | None = None) -> Alert | None:
+    """Any OpenAI-compatible local server: llama.cpp llama-server, LM Studio, vLLM."""
+    from floodlens.rag.llm import openai_compatible_chat
+    raw = openai_compatible_chat([
+        {"role": "system", "content": ALERT_SYSTEM_PROMPT},
+        {"role": "user", "content": json.dumps(_payload(impact, rag_context), ensure_ascii=False)},
+    ], json_mode=True)
+    en_msg, bn_msg = _parse_llm_json(raw, impact)
+    if not en_msg:
+        return None
+    return Alert(building_id=impact.id, risk_level=impact.risk_level,
+                 message=en_msg, source="openai_compatible_local", message_bn=bn_msg)
+
+
+def generate_alert(impact, use_api: bool | None = None, use_ollama: bool | None = None,
+                   rag_context: dict | None = None) -> Alert:
     """
     impact: a BuildingImpact (from impact_assessment.py).
     use_api: force True/False for the Claude API; if None, auto-detect based on
@@ -201,11 +224,15 @@ def generate_alert(impact, use_api: bool | None = None, use_ollama: bool | None 
         backends.append(_claude_alert)
     if should_try_ollama:
         backends.append(_ollama_alert)
+    if use_api is not False and os.environ.get("LOCAL_LLM_BASE_URL"):
+        backends.append(_local_openai_alert)
 
+    sources = list(rag_context.get("sources", [])) if rag_context else []
     for backend in backends:
         try:
-            alert = backend(impact)
+            alert = backend(impact, rag_context)
             if alert is not None:
+                alert.rag_sources = sources
                 return alert
         except Exception:
             continue  # fall through -- the demo must never crash on network/key/model issues
@@ -218,7 +245,18 @@ def generate_alert(impact, use_api: bool | None = None, use_ollama: bool | None 
 
 
 def generate_alerts_for_critical(building_impacts, limit: int = 10, use_api: bool | None = None,
-                                 use_ollama: bool | None = None) -> list[Alert]:
+                                 use_ollama: bool | None = None, rag=None) -> list[Alert]:
+    """rag: an optional floodlens.rag.retriever.FloodRAG (with graph attached).
+    When given, every alert is grounded with Graph RAG facts + retrieved guidance."""
     critical = [b for b in building_impacts if b.risk_level in ("CRITICAL", "HIGH")]
     critical.sort(key=lambda b: (b.hours_to_flood is None, b.hours_to_flood))
-    return [generate_alert(b, use_api=use_api, use_ollama=use_ollama) for b in critical[:limit]]
+    out = []
+    for b in critical[:limit]:
+        ctx = None
+        if rag is not None:
+            try:
+                ctx = rag.context_for_building(b)
+            except Exception:
+                ctx = None
+        out.append(generate_alert(b, use_api=use_api, use_ollama=use_ollama, rag_context=ctx))
+    return out

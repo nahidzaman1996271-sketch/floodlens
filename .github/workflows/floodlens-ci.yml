@@ -1,0 +1,46 @@
+name: FloodLens CI & scheduled forecast run
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours: re-run the pipeline and publish artifacts
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run test suite
+        run: pytest -q
+
+  forecast:
+    needs: test
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run pipeline, build RAG index, evaluate retrieval
+        run: |
+          python scripts/run_demo.py
+          python scripts/build_rag_index.py
+      - name: Upload forecast artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: floodlens-forecast-${{ github.run_id }}
+          path: |
+            results/*.png
+            results/*.json
+            results/floodlens.duckdb
