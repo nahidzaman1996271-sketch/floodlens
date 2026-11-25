@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FloodLens · Evidence</title>
+<style>
+  :root { color-scheme: light; --paper:#f4f3ee; --surface:#fcfcf8; --line:#d1d7d0; --ink:#172c32; --muted:#40565a; --blue:#215b78; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.65 system-ui,sans-serif; }
+  [hidden], html[lang=bn] .en, html[lang=en] .bn { display:none; }
+  main, nav { width:min(calc(100% - 32px), 860px); margin-inline:auto; }
+  nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-block:16px; border-bottom:1px solid var(--line); }
+  main { padding-block:24px 48px; }
+  h1, h2 { margin:0; font-weight:600; line-height:1.25; }
+  h1 { font-size:clamp(28px, 5vw, 40px); }
+  h2 { font-size:22px; }
+  p { margin:8px 0 0; color:var(--muted); }
+  a { color:var(--blue); text-underline-offset:3px; }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+  button { border:1px solid var(--line); border-radius:6px; background:var(--surface); padding:6px 12px; color:var(--ink); font:inherit; cursor:pointer; }
+  section { margin-top:24px; padding-top:16px; border-top:1px solid var(--line); }
+  dl { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:1px; margin:16px 0; padding:1px; background:var(--line); border-radius:8px; overflow:hidden; }
+  dl div { display:flex; flex-direction:column-reverse; padding:12px; background:var(--surface); }
+  dt { font-size:14px; color:var(--muted); }
+  dd { margin:0; font-size:25px; font-variant-numeric:tabular-nums; color:var(--blue); }
+  @media (max-width:600px) { dl { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+</style>
+</head>
+<body>
+<nav aria-label="FloodLens">
+  <a href="./"><span class="bn">← FloodLens মানচিত্র</span><span class="en">← FloodLens map</span></a>
+  <button type="button" id="language"><span class="bn" lang="en">English</span><span class="en" lang="bn">বাংলা</span></button>
+</nav>
+<main>
+  <h1><span class="bn">FloodLens মূল্যায়ন</span><span class="en">FloodLens evaluation</span></h1>
+  <p class="bn">ক্লাইমেটস্ফিয়ার ডেমোর ফলাফল, ঐতিহাসিক সূত্র ও প্রস্তাবিত ব্যবহারকারী পরীক্ষা।</p>
+  <p class="en">ClimateSphere demo results, historical reference, and proposed user pilot.</p>
+
+  <section aria-labelledby="results-heading">
+    <h2 id="results-heading"><span class="bn">সিমুলেশন যাচাই</span><span class="en">Synthetic evaluation</span></h2>
+    <dl id="metrics" hidden>
+      <div><dt><span class="bn">সিমুলেশন</span><span class="en">Scenarios</span></dt><dd id="scenarios"></dd></div>
+      <div><dt><span class="bn">ভবনের সময়</span><span class="en">Building timings</span></dt><dd id="buildings"></dd></div>
+      <div><dt><span class="bn">সড়কের সময়</span><span class="en">Road timings</span></dt><dd id="roads"></dd></div>
+      <div><dt><span class="bn">দ্বিভাষিক সতর্কতা জোড়া</span><span class="en">Bilingual alert pairs</span></dt><dd id="alerts"></dd></div>
+    </dl>
+    <p id="results-error" role="status" hidden><span class="bn">ফলাফল এখানে লোড হয়নি। নিচের লিংক থেকে মূল ফাইলটি খুলুন।</span><span class="en">The results could not load here. Open the original file below.</span></p>
+    <p class="bn">সিমুলেশনের গ্রিডের সঙ্গে ভবন ও সড়কের প্রথম প্লাবনের সময় মিলিয়ে দেখা হয়েছে। অফলাইন সতর্কতার দুই ভাষায় সময়, আশ্রয়কেন্দ্রের নাম ও দূরত্ব যাচাই করা হয়েছে।</p>
+    <p class="en">Building and road timings were checked against the sampled flood grids. Both versions of each offline alert were checked for the expected hour, shelter name, and distance.</p>
+    <p><a href="./results/judging_evaluation.json"><span class="bn">পূর্ণ ফলাফল ও B0002 কেস (JSON)</span><span class="en">Full results and B0002 case (JSON)</span></a></p>
+  </section>
+
+  <section aria-labelledby="history-heading">
+    <h2 id="history-heading"><span class="bn">ঐতিহাসিক প্রেক্ষাপট · সুনামগঞ্জ, জুন ২০২২</span><span class="en">Historical context · Sunamganj, June 2022</span></h2>
+    <p class="bn">১৮ জুন বিকেল ৫:৫৪-এ তোলা স্যাটেলাইট চিত্রে UNOSAT সুনামগঞ্জের বিশ্লেষিত ১৩৮ বর্গকিলোমিটারের মধ্যে ১০৬ বর্গকিলোমিটার সম্ভাব্য প্লাবন চিহ্নিত করে। এই প্রাথমিক মানচিত্র ঘটনাটির প্রেক্ষাপট দেয়। বাস্তব বন্যার সঙ্গে FloodLens পূর্বাভাসের নির্ভুলতা যাচাই বাকি।</p>
+    <p class="en">In satellite imagery acquired on 18 June at 17:54 local time, UNOSAT identified about 106 km² of possible flooding within the 138 km² it analyzed in Sunamganj. This preliminary map documents the event. FloodLens forecast accuracy against observed flooding remains unverified.</p>
+    <p><a href="https://unosat.org/static/unosat_filesystem/3303/UNOSAT_A3_Natural_Portrait_FL20220525BGD_Sylhet_Bangladesh_18Jun2022.pdf"><span class="bn">UNOSAT স্যাটেলাইট মূল্যায়ন (PDF)</span><span class="en">UNOSAT satellite assessment (PDF)</span></a></p>
+  </section>
+
+  <section aria-labelledby="pilot-heading">
+    <h2 id="pilot-heading"><span class="bn">বাংলা সতর্কতা বোঝার পরীক্ষা</span><span class="en">Bangla alert comprehension pilot</span></h2>
+    <p class="bn">পরীক্ষার প্রশ্ন ও স্কোরশিট প্রস্তুত। স্বেচ্ছাসেবকদের সঙ্গে পরীক্ষা চালানো বাকি। প্রস্তাবিত পরীক্ষায় দেখা হবে অংশগ্রহণকারীরা প্রথম করণীয়, সময় ও আশ্রয়কেন্দ্র কত দ্রুত ও সঠিকভাবে শনাক্ত করেন।</p>
+    <p class="en">The prompts and scoring sheet are ready. The pilot still needs participants. It will measure how quickly and accurately volunteers identify the first action, timing, and shelter.</p>
+    <p><a href="https://github.com/nahidzaman1996271-sketch/floodlens/blob/main/docs/JUDGING_DEMO.md#bangla-alert-comprehension-pilot"><span class="bn">পরীক্ষার প্রশ্ন ও স্কোরশিট</span><span class="en">Pilot prompts and scoring sheet</span></a></p>
+  </section>
+</main>
+<script>
+  const requestedLanguage = new URLSearchParams(location.search).get('lang');
+  let report;
+  function setLanguage(language) {
+    const english = language === 'en';
+    document.documentElement.lang = english ? 'en' : 'bn';
+    document.title = english ? 'FloodLens · Evidence' : 'FloodLens · মূল্যায়ন';
+    if (!report) return;
+    const format = new Intl.NumberFormat(english ? 'en' : 'bn-BD');
+    const values = { scenarios: report.seeds.length, buildings: report.totals.buildings, roads: report.totals.roads, alerts: report.totals.bilingual_alerts };
+    for (const [id, value] of Object.entries(values)) {
+      document.getElementById(id).textContent = format.format(value);
+    }
+    document.getElementById('metrics').hidden = false;
+  }
+  setLanguage(requestedLanguage);
+  document.getElementById('language').addEventListener('click', () => {
+    setLanguage(document.documentElement.lang === 'bn' ? 'en' : 'bn');
+  });
+  fetch('./results/judging_evaluation.json')
+    .then(response => {
+      if (!response.ok) throw new Error('Evaluation unavailable');
+      return response.json();
+    })
+    .then(data => {
+      if (!Array.isArray(data.seeds) || !['buildings', 'roads', 'bilingual_alerts'].every(key => Number.isInteger(data.totals?.[key]))) {
+        throw new Error('Invalid evaluation');
+      }
+      report = data;
+      setLanguage(document.documentElement.lang);
+    })
+    .catch(() => { document.getElementById('results-error').hidden = false; });
+</script>
+</body>
+</html>

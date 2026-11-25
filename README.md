@@ -185,7 +185,7 @@ The simulation below illustrates how FloodLens models the inundation wavefront a
 
 ## ClimateSphere judging materials
 
-[One-page brief](CLIMATESPHERE_BRIEF.md) · [Three-minute walkthrough and pilot protocol](docs/JUDGING_DEMO.md) · [Reproducible evaluation results](results/judging_evaluation.json)
+[Dashboard evidence page](https://nahidzaman1996271-sketch.github.io/floodlens/evidence.html) · [One-page brief](CLIMATESPHERE_BRIEF.md) · [Three-minute walkthrough and pilot protocol](docs/JUDGING_DEMO.md) · [Reproducible evaluation results](results/judging_evaluation.json)
 
 Across **12 synthetic scenarios**, building and road timings matched the sampled grids for **1,170 buildings** and **36 roads**. Both versions of all **1,023 bilingual fallback alert pairs** contained the expected hour, shelter name, and distance. The UNOSAT assessment provides historical context. Field forecast accuracy and pilot comprehension remain open.
 

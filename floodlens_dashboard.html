@@ -213,6 +213,7 @@
   .api-button { color: var(--blue); }
   .api-button:hover { background: var(--raised); }
   .api-button:disabled { opacity: .65; cursor: wait; }
+  .evidence-link { display: inline-block; margin-inline-start: 8px; font-size: 13px; }
   #apiStatus { color: var(--secondary); font-size: 13px; }
   #apiStatus:not(:empty) { margin-top: 8px; }
   .survival-card { background: var(--surface); padding: 16px; border: 1px solid var(--line); border-inline-start: 3px solid var(--shelter); border-radius: 8px; }
@@ -422,6 +423,7 @@
     <div class="sidebar-section">
       <div class="section-title"><h2 id="apiTitle">মডেলের নমুনা ফলাফল</h2></div>
       <button type="button" class="api-button" id="apiCheck">API মডেল চালান</button>
+      <a class="evidence-link" id="evidenceLink" href="./evidence.html">মূল্যায়ন ও ঐতিহাসিক সূত্র</a>
       <p id="apiStatus" role="status"></p>
     </div>
 
@@ -1030,6 +1032,9 @@ function toggleVoiceAlert() {
 function toggleLanguage() {
   currentLang = (currentLang === 'bn') ? 'en' : 'bn';
   const dict = I18N[currentLang];
+  const evidence = document.getElementById('evidenceLink');
+  evidence.textContent = currentLang === 'en' ? 'Evaluation and flood history' : 'মূল্যায়ন ও ঐতিহাসিক সূত্র';
+  evidence.href = './evidence.html?lang=' + currentLang;
 
   document.documentElement.lang = currentLang;
   for (const id of ['demoBadge', 'demoNotice', 'demoUse', 'mapHeading', 'legRoute']) {
