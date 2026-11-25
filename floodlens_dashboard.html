@@ -114,6 +114,31 @@
     font-size: 13px;
   }
   .map-frame { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .map-search { position: relative; z-index: 2; }
+  .location-results {
+    position: absolute; inset: 100% 0 auto; max-height: min(320px, 45vh);
+    margin: 0; padding: 4px; overflow: auto; list-style: none;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 0 0 8px 8px;
+  }
+  .location-results li + li { border-top: 1px solid var(--line); }
+  .location-results button {
+    display: grid; gap: 2px; width: 100%; padding: 8px 12px; border: 0;
+    border-radius: 4px; background: var(--surface); color: var(--ink); text-align: start;
+  }
+  .location-results button:hover, .location-results button:focus-visible { background: var(--raised); }
+  .location-results button:focus-visible { outline-offset: -2px; }
+  .location-results small { font-size: 12px; color: var(--secondary); }
+  .location-status { padding: 8px 12px; color: var(--secondary); font-size: 13px; }
+  .location-status:empty { margin: 0; padding: 0; }
+  .map-only-notice {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line);
+    color: var(--secondary); font-size: 13px;
+  }
+  .map-only-notice[hidden], .location-results[hidden] { display: none; }
+  #mapOnlyText strong { display: block; color: var(--ink); }
+  .browsing-place main { grid-template-columns: minmax(0, 1fr); }
+  .browsing-place :is(.col-sidebar, .gauge-widget, .btn-siren, .timeline-bar, .map-legend-card) { display: none; }
   .map-search-bar {
     display: flex;
     flex-wrap: wrap;
@@ -307,15 +332,22 @@
     </div>
     <div class="map-frame">
       <!-- Search Bar -->
-      <div class="map-search-bar">
-        <span id="searchIcon" class="icon" aria-hidden="true"></span>
-        <input type="text" id="searchInput" aria-label="নমুনা বাড়ি খুঁজুন" placeholder="নাম বা বাড়ির আইডি খুঁজুন" oninput="handleSearch(this.value)">
-        <div class="pills-container">
-          <button type="button" class="search-pill" id="quickHome" onclick="quickSelect(activeStation.households[0].id)">নমুনা বাড়ি</button>
-          <button type="button" class="search-pill" id="quickShelter" onclick="quickSelect(activeStation.shelters[0].id)">নমুনা আশ্রয়কেন্দ্র</button>
+      <form class="map-search" id="locationSearch" role="search">
+        <div class="map-search-bar">
+          <span id="searchIcon" class="icon" aria-hidden="true"></span>
+          <input type="text" id="searchInput" aria-label="স্থান, স্টেশন বা বাড়ির আইডি খুঁজুন" placeholder="যেমন কুয়াকাটা, সিলেট বা B0301" autocomplete="off" spellcheck="false" maxlength="120">
+          <div class="pills-container">
+            <button type="button" class="search-pill" id="quickHome" onclick="quickSelect(activeStation.households[0].id)">নমুনা বাড়ি</button>
+            <button type="button" class="search-pill" id="quickShelter" onclick="quickSelect(activeStation.shelters[0].id)">নমুনা আশ্রয়কেন্দ্র</button>
+          </div>
         </div>
+        <p class="location-status" id="locationStatus" role="status"></p>
+        <ul class="location-results" id="locationResults" hidden></ul>
+      </form>
+      <div class="map-only-notice" id="mapOnlyNotice" hidden>
+        <p id="mapOnlyText" role="status"></p>
+        <button class="search-pill" type="button" id="returnToScenario">সিমুলেশনে ফিরুন</button>
       </div>
-
       <div class="map-stage">
       <div id="leafletMap"></div>
 
@@ -458,6 +490,7 @@
   <div class="footer-links">
     <a href="https://github.com/nahidzaman1996271-sketch/floodlens" target="_blank">GitHub Repository</a>
     <a href="https://github.com/nahidzaman1996271-sketch/floodlens/blob/main/SUBMISSION_DRAFT.md" target="_blank">Submission Draft</a>
+    <a href="https://www.geonames.org/export/" target="_blank" rel="noopener">Place names by GeoNames</a>
     <a id="apiDocs" href="https://floodlens-api-vq31.onrender.com/docs" target="_blank" rel="noopener">API docs</a>
   </div>
 </footer>
@@ -508,7 +541,6 @@ const I18N = {
     sirenText: "নমুনা অডিও সতর্কতা",
     sirenStop: "অডিও বন্ধ করুন",
     langSwitchText: "English",
-    searchPlaceholder: "নাম বা বাড়ির আইডি খুঁজুন",
     legShelter: "নমুনা আশ্রয়কেন্দ্র",
     legCritical: "প্লাবিত বাড়ি",
     legWater: "সিমুলেশনে প্লাবিত এলাকা",
@@ -536,7 +568,6 @@ const I18N = {
     sirenText: "Play sample voice alert",
     sirenStop: "Stop Audio",
     langSwitchText: "বাংলা",
-    searchPlaceholder: "Search by name or household ID",
     legShelter: "Sample shelter",
     legCritical: "Flooded home",
     legWater: "Simulated flood extent",
@@ -684,6 +715,7 @@ function initMap() {
    RENDER MAP ELEMENTS (SURMA RIVER, INUNDATION, SHELTERS, HOMES)
    ===================================================================== */
 function renderStationMapElements({ pan = false } = {}) {
+  if (browsePlace) return;
   floodLayerGroup.clearLayers();
   markersLayerGroup.clearLayers();
   homePoints.clear();
@@ -824,6 +856,8 @@ function selectHouseholdById(id, { pan = true } = {}) {
    CHANGE STATION
    ===================================================================== */
 function changeStation(key) {
+  leavePlaceBrowse();
+  document.getElementById('stationSelect').value = key;
   activeStation = STATIONS[key];
   selectedHousehold = null;
   currentSimulationHour = 1;
@@ -941,14 +975,8 @@ function updateSidebarMetrics() {
 /* =====================================================================
    SEARCH & QUICK SELECTION
    ==================================================================== */
-function handleSearch(q) {
-  if (!q.trim()) return;
-  const term = q.toLowerCase();
-  const match = activeStation.households.find(h => h.name.toLowerCase().includes(term) || h.nameEn.toLowerCase().includes(term) || h.id.toLowerCase().includes(term));
-  if (match) selectHouseholdById(match.id);
-}
-
 function quickSelect(id) {
+  if (browsePlace) changeStation(document.getElementById('stationSelect').value);
   if (id.startsWith('B')) {
     selectHouseholdById(id);
   } else if (id.startsWith('S')) {
@@ -1013,7 +1041,7 @@ function toggleLanguage() {
   document.getElementById('sirenText').textContent = dict.sirenText;
   document.getElementById('langSwitchText').textContent = dict.langSwitchText;
   const bn = currentLang === 'bn';
-  document.getElementById('searchInput').placeholder = dict.searchPlaceholder;
+  refreshLocationSearchLanguage();
   for (const option of document.getElementById('stationSelect').options) {
     const station = STATIONS[option.value];
     option.textContent = bn ? station.name : station.nameEn;
@@ -1033,7 +1061,6 @@ function toggleLanguage() {
   document.getElementById('spActionList').querySelectorAll('li').forEach((item, index) => {
     item.textContent = checklist[index];
   });
-  document.getElementById('searchInput').setAttribute('aria-label', bn ? 'নমুনা বাড়ি খুঁজুন' : 'Find a sample home');
   document.getElementById('hourSlider').setAttribute('aria-label', bn ? 'সিমুলেশনের ঘণ্টা' : 'Simulation hour');
   document.getElementById('btnPlay').setAttribute('aria-label', bn ? 'সিমুলেশন চালান বা থামান' : 'Play or pause simulation');
   document.getElementById('quickHome').textContent = bn ? 'নমুনা বাড়ি' : 'Sample home';
@@ -1117,6 +1144,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('apiCheck').addEventListener('click', checkApiModel);
 });
 </script>
+<script src="./assets/location-search.js"></script>
 
 </body>
 </html>

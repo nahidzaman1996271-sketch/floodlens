@@ -194,8 +194,10 @@ The simulation below illustrates how FloodLens models the inundation wavefront a
 The bilingual dashboard uses sample scenarios for Sunamganj, Kurigram, Sirajganj, and Sylhet. OpenStreetMap provides the basemap. Flood extents, station readings, road closures, household impacts, and shelter directions are illustrative. Follow official warnings for real emergencies.
 
 1. Choose a station and play or scrub the 72-hour timeline to see how sample homes and roads are affected.
-2. Search for a household or click its map marker to see the sample impact, shelter, and direction. Use the voice control to hear the selected household's sample alert.
+2. Search by place name, demo station, shelter name, or household ID. Choose a sample home to see its modeled impact and shelter direction, or choose a map-only place to explore it. The voice control reads the selected household’s sample alert.
 3. Select **Run API model** to get the building and critical-risk counts from the separate, seeded Python model at `/predict`. The map remains interactive while the API starts or is unavailable.
+
+The bundled Bangladesh place index uses [GeoNames data](https://www.geonames.org/export/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). It selects populated places and first- through third-level administrative areas, compacts names and coordinates, and adds Bangla search aliases for Kuakata. Search runs in the browser.
 
 GitHub Pages hosts the static dashboard. Render hosts the optional API preview and Swagger docs. To preview dashboard changes locally, run `python -m http.server 8765` from the repository root and open [the local preview](http://localhost:8765/).
 
