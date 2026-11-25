@@ -14,7 +14,7 @@
 Bangladesh's flood early-warning systems tell communities an abstract river gauge number — "water level may rise" or "danger stage reached at 6.5 meters." That information is accurate for hydrologists, but completely useless for a family living in a rural haor or floodplain basin. At 2:00 AM, a household doesn't know whether they have 45 minutes or 12 hours before floodwaters enter their home, whether the village access road is already submerged, or where the nearest dry shelter actually is. The tragic result is warnings that are heard, but not acted upon until it is too late.
 
 **Our Approach:**  
-FloodLens transforms raw flood data into a street-level personal survival plan. Instead of "danger stage reached," each household or community health worker receives an actionable, plain-language instruction: *"Flooding predicted here in 6 hours. Village Access Road 1 is impassable. Nearest safe refuge: Char Bandar Primary School Shelter (2.07 km away via Upazila Connector Road). Move medicine, documents, and livestock now."*
+FloodLens transforms raw flood data into a street-level personal survival plan. Instead of "danger stage reached," each household or community health worker receives an actionable, plain-language instruction: *"Flooding predicted here in 6 hours. Village Access Road 1 is impassable. Sample shelter: Char Bandar Primary School Shelter (2.07 km away). Move medicine, documents, and livestock now."*
 
 We achieved this by uniting three distinct technologies:
 1. **Time-series forecasting** of the river’s rate-of-rise using Holt’s damped-trend exponential smoothing coupled with rainfall forecasts;
@@ -22,7 +22,7 @@ We achieved this by uniting three distinct technologies:
 3. **A grounded Claude LLM alert layer** that converts calculated hazard metrics into plain-language bilingual instructions (Bangla & English) without hallucinating numbers.
 
 **Status:**  
-A fully functional, end-to-end prototype tested with 24 passing integration tests, complete with a REST API, real-time live monitoring dashboard, and clear integration paths for live BWDB gauge feeds and open SRTM terrain data.
+The end-to-end prototype has 55 passing tests, a REST API, and an interactive dashboard that uses simulated station and household data. Live BWDB gauges and SRTM elevation data are potential future integrations.
 
 ---
 
@@ -32,9 +32,9 @@ A fully functional, end-to-end prototype tested with 24 passing integration test
 * **Live Interactive Web App**: https://nahidzaman1996271-sketch.github.io/floodlens/ (Interactive 72h flood progression scrub slider, Leaflet GIS mapping, road access table, and bilingual alerts).
 * **Live Cloud Backend API (Render)**: https://floodlens-api-vq31.onrender.com (FastAPI microservice with live endpoints `/predict`, `/alerts`, `/scenario/summary`).
 * **Live Interactive Swagger API Docs**: https://floodlens-api-vq31.onrender.com/docs
-* **GitHub Repository**: https://github.com/nahidzaman1996271-sketch/floodlens (Full source code, 24 unit/integration tests, assets, and live interactive monitor).
-* **Commit Code / Submission SHA**: `f23be2c` (Full audit trail, chronological commit hashes, and timestamps documented in README).
-* **Test Suite Verification**: 24/24 tests passing (`pytest tests/ -v`). Verifies forecast monotonicity, physical elevation sanity, shelter isolation on high ground, and API contracts.
+* **GitHub Repository**: https://github.com/nahidzaman1996271-sketch/floodlens (Full source code, 55 tests, assets, and an interactive simulation).
+* **Commit Code / Submission SHA**: Enter the SHA of the commit published for judging.
+* **Test Suite Verification**: 55/55 tests passing (`pytest tests/ -v`). Verifies forecast monotonicity, physical elevation sanity, shelter isolation on high ground, and API contracts.
 * **Concrete Impact Figures (from `results/prediction_export.json`)**:
   * Locality: Char Bandar Union (synthetic haor-floodplain profile, 60×60 elevation grid)
   * Current Gauge Level: 5.08 m | Danger Level: 6.5 m | Severe Level: 8.0 m

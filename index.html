@@ -3,527 +3,277 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FloodLens Bangladesh — জাতীয় বন্যা পূর্বাভাস ও জরুরি স্থানান্তর প্ল্যাটফর্ম</title>
+<title>FloodLens Bangladesh — বন্যা সিমুলেশন ও জরুরি স্থানান্তর প্ল্যাটফর্ম</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
   :root {
-    --bg-dark: #07131D;
-    --bg-card: #0D1F2D;
-    --bg-card-hover: #132A3E;
-    --border: #1B354B;
-    --border-accent: #2A5375;
-    --bd-green: #006A4E;
-    --bd-green-light: #00A878;
-    --bd-red: #E63946;
-    --bd-red-light: #FF5A5F;
-    --bd-amber: #F4A261;
-    --river-blue: #38A3A5;
-    --river-glow: #57CC99;
-    --flood-water: rgba(46, 150, 215, 0.45);
-    --text-primary: #F0F4F8;
-    --text-muted: #8FA6B8;
-    --text-dim: #5A758A;
+    color-scheme: light;
+    --paper: #f4f3ee;
+    --surface: #fcfcf8;
+    --raised: #eaece5;
+    --line: #d1d7d0;
+    --ink: #172c32;
+    --secondary: #40565a;
+    --muted: #526564;
+    --blue: #215b78;
+    --water: #237ca9;
+    --flooded: #943d33;
+    --shelter: #285949;
+    --road: #895b23;
+    --font: 'IBM Plex Sans', 'Hind Siliguri', sans-serif;
+    --figures: 'IBM Plex Mono', 'Hind Siliguri', monospace;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.55 var(--font); }
+  h1, h2, h3, h4, p { margin: 0; }
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+  a { color: var(--blue); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .num { font-family: var(--figures); font-variant-numeric: tabular-nums; }
+  .icon { display: inline-block; width: 16px; height: 16px; flex: 0 0 16px; vertical-align: middle; }
 
-  body {
-    background: var(--bg-dark);
-    color: var(--text-primary);
-    font-family: 'Hind Siliguri', 'Inter', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-  }
-
-  .en-font { font-family: 'Inter', sans-serif; }
-  .num { font-family: 'Space Grotesk', sans-serif; font-variant-numeric: tabular-nums; }
-
-  /* ================= TOP GOVERNMENT STRIP ================= */
-  .gov-strip {
-    background: linear-gradient(90deg, #004D38 0%, #006A4E 50%, #004D38 100%);
-    padding: 6px 24px;
+  .notice {
+    background: var(--ink);
+    color: #e9eeea;
+    padding: 8px max(24px, calc((100% - 1536px) / 2));
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px 24px;
     font-size: 12px;
-    color: #E2F3ED;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
-  .gov-left { display: flex; align-items: center; gap: 10px; }
-  .gov-badge {
-    background: #E63946;
-    color: #fff;
-    padding: 2px 7px;
-    border-radius: 3px;
-    font-weight: 700;
-    font-size: 10.5px;
-    letter-spacing: 0.5px;
-  }
-  .gov-right { display: flex; align-items: center; gap: 14px; }
-  .hotline { font-weight: 700; color: #FFE66D; display: flex; align-items: center; gap: 5px; }
+  .notice-label { display: flex; align-items: center; gap: 8px; }
+  .notice-label strong { color: white; font-weight: 600; }
+  .notice-label span::before { content: '·'; margin-inline-end: 8px; color: #c0cfca; }
 
-  /* ================= MAIN HEADER ================= */
+  header, main, footer { width: min(calc(100% - 48px), 1536px); margin-inline: auto; }
   header {
-    background: #091926;
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 16px 24px;
+    padding-block: 24px;
+    border-bottom: 1px solid var(--line);
   }
-  .brand-block { display: flex; align-items: center; gap: 14px; }
-  .logo-icon {
-    width: 44px;
-    height: 44px;
-    background: radial-gradient(circle at 30% 30%, #57CC99, #006A4E);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
+  .brand-text h1 { font-size: clamp(28px, 3vw, 40px); line-height: 1.08; font-weight: 600; letter-spacing: -.05em; }
+  .brand-text h1 span { color: var(--blue); font-weight: 400; }
+  .brand-sub { margin-block-start: 8px; color: var(--secondary); font-size: 14px; }
+  .gauge-widget { display: flex; align-items: center; gap: 16px; padding-inline: 16px; border-inline-start: 1px solid var(--line); unicode-bidi: isolate; }
+  .gauge-meta { min-width: 96px; }
+  .gauge-num { font-size: 24px; line-height: 1.1; }
+  .gauge-lbl, .gauge-stages { color: var(--muted); font-size: 12px; }
+  .gauge-meter-box { width: min(176px, 38vw); }
+  .gauge-track { position: relative; overflow: hidden; height: 6px; background: #dbe2df; }
+  .gauge-fill { height: 100%; background: var(--blue); }
+  .gauge-threshold { position: absolute; inset-block: 0; width: 2px; background: var(--flooded); box-shadow: 0 0 0 1px var(--surface); }
+  .gauge-stages { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 12px; margin-block-start: 4px; }
+  .stage-danger { color: var(--flooded); }
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .btn-siren, .btn-lang, .api-button, .search-pill {
+    min-height: 36px;
+    display: inline-flex;
     justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 0 20px rgba(87,204,153,0.3);
-  }
-  .brand-text h1 {
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.3px;
-    display: flex;
     align-items: center;
     gap: 8px;
-  }
-  .brand-text h1 span { color: var(--river-glow); }
-  .brand-sub { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
-
-  /* Station Selector */
-  .station-picker {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 4px 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .station-picker label { font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; font-weight: 600; }
-  .station-picker select {
-    background: transparent;
-    border: none;
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
-    outline: none;
-  }
-  .station-picker select option { background: #0D1F2D; color: #fff; }
-
-  /* River Gauge Visual */
-  .gauge-widget {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 16px;
-  }
-  .gauge-meta { text-align: right; }
-  .gauge-num { font-size: 24px; font-weight: 700; color: var(--river-glow); line-height: 1; }
-  .gauge-lbl { font-size: 11px; color: var(--text-dim); margin-top: 3px; font-weight: 500; }
-  .gauge-meter-box { width: 140px; }
-  .gauge-track {
-    position: relative;
-    height: 8px;
-    background: #07131D;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .gauge-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease, background 0.4s ease; }
-  .gauge-stages { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-top: 4px; }
-  .stage-danger { color: var(--bd-red-light); font-weight: 600; }
-
-  /* Top Right Controls */
-  .top-actions { display: flex; align-items: center; gap: 10px; }
-  .btn-siren {
-    background: linear-gradient(135deg, #E63946, #D62828);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-family: inherit;
+    padding: 4px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
     font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 0 15px rgba(230,57,70,0.35);
-    transition: all 0.2s;
-  }
-  .btn-siren:hover { transform: scale(1.02); box-shadow: 0 0 25px rgba(230,57,70,0.55); }
-  .btn-siren.playing { animation: pulseSiren 1s infinite; }
-  @keyframes pulseSiren {
-    0% { background: #E63946; }
-    50% { background: #FF5A5F; box-shadow: 0 0 30px #FF5A5F; }
-    100% { background: #E63946; }
-  }
-
-  .btn-lang {
-    background: var(--bg-card);
-    border: 1px solid var(--border-accent);
-    color: var(--river-glow);
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .btn-lang:hover { background: var(--bg-card-hover); }
-
-  /* ================= MAIN LAYOUT ================= */
-  main {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    background: var(--border);
-    gap: 1px;
-    position: relative;
-  }
-  @media (max-width: 1050px) {
-    main { grid-template-columns: 1fr; }
-  }
-
-  /* Left Column (Map & Timeline) */
-  .col-map {
-    background: var(--bg-dark);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-
-  #leafletMap {
-    flex: 1;
-    min-height: 540px;
-    width: 100%;
-    background: #08121A;
-    z-index: 1;
-  }
-
-  /* Search Bar Floating Over Map */
-  .map-search-bar {
-    position: absolute;
-    top: 16px;
-    left: 60px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(13, 31, 45, 0.92);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-accent);
-    border-radius: 10px;
-    padding: 6px 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    width: min(420px, calc(100% - 100px));
-  }
-  .map-search-bar input {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-family: inherit;
-    font-size: 13.5px;
-    flex: 1;
-    outline: none;
-  }
-  .map-search-bar input::placeholder { color: var(--text-dim); }
-  .pills-container {
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-  }
-  .search-pill {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: var(--text-muted);
-    font-size: 11px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    cursor: pointer;
+    font-weight: 500;
     white-space: nowrap;
   }
-  .search-pill:hover { background: var(--bd-green); color: #fff; }
+  .btn-siren:hover, .btn-lang:hover, .search-pill:hover, .btn-siren.playing { background: var(--raised); }
+  .btn-siren.playing { border-color: var(--blue); }
 
-  /* Map Legend Overlay */
+  main { display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 29vw, 424px); align-items: start; gap: 24px; padding-block: 24px 40px; }
+  .col-map { min-width: 0; position: sticky; top: 16px; }
+  .map-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-block-end: 12px; }
+  .map-heading h2 { font-size: 24px; line-height: 1.25; font-weight: 600; }
+  .station-picker { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
+  .station-picker label { font-size: 13px; color: var(--secondary); }
+  .station-picker select {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 36px;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 13px;
+  }
+  .map-frame { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  .map-search-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--secondary);
+  }
+  .map-search-bar input { flex: 1; min-width: 112px; min-height: 36px; padding: 4px; border: 0; background: transparent; color: var(--ink); }
+  .map-search-bar input::placeholder { color: var(--muted); opacity: 1; }
+  .pills-container { display: flex; flex-wrap: wrap; gap: 4px; }
+  .search-pill { min-height: 32px; }
+  .map-stage { position: relative; }
+  #leafletMap { z-index: 0; width: 100%; height: clamp(340px, 56vh, 664px); background: #dbe3e2; }
+  .leaflet-container { font-family: var(--font); }
+  .leaflet-tile-pane { filter: saturate(.76); }
+  .leaflet-container .leaflet-control-attribution { font-size: 11px; }
+  .leaflet-container a { color: var(--blue); }
+  .leaflet-container a:focus-visible { outline-offset: -3px; }
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--surface); color: var(--ink); }
+  .leaflet-popup-content { line-height: 1.5; }
+  .leaflet-popup-content h3 { font-size: 16px; font-weight: 600; }
+  .leaflet-popup-content p { margin-block: 4px; }
   .map-legend-card {
     position: absolute;
-    bottom: 90px;
-    left: 16px;
-    z-index: 1000;
-    background: rgba(13, 31, 45, 0.92);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
+    z-index: 1;
+    bottom: 24px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+    padding: 8px 12px;
+    color: var(--secondary);
+    background: var(--surface);
+    border: 1px solid var(--line);
     border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 11px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-    max-width: 250px;
-  }
-  .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-  .legend-item:last-child { margin-bottom: 0; }
-  .legend-swatch { width: 14px; height: 14px; border-radius: 3px; }
-
-  /* Bottom Timeline Controller */
-  .timeline-bar {
-    background: #091A27;
-    border-top: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    z-index: 1000;
-  }
-  .btn-play {
-    background: var(--bd-green);
-    color: #fff;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .btn-play:hover { background: var(--bd-green-light); }
-  .scrubber-wrap { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-  .scrubber-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); }
-  .scrubber-slider {
-    width: 100%;
-    accent-color: var(--river-glow);
-    cursor: pointer;
-    height: 6px;
-  }
-
-  /* Right Column (Control Center & Alerts) */
-  .col-sidebar {
-    background: var(--bg-card);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    max-height: calc(100vh - 120px);
-  }
-  .sidebar-section {
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: 0.2px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .section-tag {
-    font-size: 10px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    padding: 2px 7px;
-    border-radius: 4px;
-    color: var(--text-muted);
-  }
-
-  /* KPI Grid */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .kpi-card {
-    background: #091724;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-  }
-  .kpi-val { font-size: 24px; font-weight: 700; line-height: 1.1; }
-  .kpi-card.critical .kpi-val { color: var(--bd-red-light); }
-  .kpi-card.warning .kpi-val { color: var(--bd-amber); }
-  .kpi-card.info .kpi-val { color: var(--river-glow); }
-  .kpi-lbl { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-
-  /* Personal Survival Plan Card (Active Selected Home) */
-  .survival-card {
-    background: linear-gradient(135deg, rgba(0, 106, 78, 0.22), rgba(13, 31, 45, 0.95));
-    border: 1.5px solid var(--bd-green);
-    border-radius: 10px;
-    padding: 14px;
-    margin-top: 8px;
-    box-shadow: 0 4px 16px rgba(0, 106, 78, 0.25);
-  }
-  .survival-card-head { display: flex; justify-content: space-between; align-items: baseline; }
-  .survival-card-head h4 { font-size: 14px; font-weight: 700; color: #fff; }
-  .badge-danger {
-    background: rgba(230, 57, 70, 0.2);
-    border: 1px solid var(--bd-red);
-    color: var(--bd-red-light);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-  .survival-metrics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 10px 0;
-    padding: 8px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 6px;
-  }
-  .sm-item .sm-lbl { font-size: 10.5px; color: var(--text-dim); }
-  .sm-item .sm-val { font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px; }
-  .action-checklist { margin-top: 8px; font-size: 12px; }
-  .action-checklist li {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 4px;
-    color: #DDE7EE;
-  }
-
-  /* Road Access List */
-  .road-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 12.5px;
-  }
-  .road-row:last-child { border-bottom: none; }
-  .road-status-pill {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 12px;
-  }
-  .road-status-pill.passable { background: rgba(0,168,120,0.18); color: var(--bd-green-light); border: 1px solid var(--bd-green); }
-  .road-status-pill.at_risk { background: rgba(244,162,97,0.18); color: var(--bd-amber); border: 1px solid var(--bd-amber); }
-  .road-status-pill.closed { background: rgba(230,57,70,0.18); color: var(--bd-red-light); border: 1px solid var(--bd-red); }
-
-  /* Alert Messages List */
-  .alert-card {
-    background: #091724;
-    border: 1px solid var(--border);
-    border-left: 3.5px solid var(--bd-red);
-    border-radius: 6px;
-    padding: 10px 12px;
-    margin-bottom: 8px;
     font-size: 12px;
-    line-height: 1.5;
+    pointer-events: none;
   }
-  .alert-card.HIGH { border-left-color: var(--bd-amber); }
-  .alert-card-head {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-  }
-  .alert-card-head span { color: #fff; }
+  .legend-item { display: flex; align-items: center; gap: 8px; min-height: 20px; }
+  .legend-swatch { width: 16px; height: 12px; flex: 0 0 16px; display: grid; place-items: center; }
+  .legend-swatch::before { content: ''; display: block; }
+  .legend-shelter::before { width: 8px; height: 8px; background: var(--shelter); border-radius: 2px; }
+  .legend-home::before { width: 8px; height: 8px; background: var(--flooded); border-radius: 50%; }
+  .legend-water::before { width: 14px; height: 9px; border: 1px solid var(--water); background: #add2e4; }
+  .legend-road::before { width: 16px; border-top: 2px solid var(--road); }
+  .legend-route::before { width: 16px; border-top: 2px dashed var(--shelter); }
+  .map-point { display: grid; place-items: center; width: 100%; height: 100%; border: 2px solid white; color: white; background: var(--road); border-radius: 50%; }
+  .map-point--flooded { background: var(--flooded); }
+  .map-point--selected { outline: 2px solid var(--ink); }
+  .map-point--shelter { background: var(--shelter); border-radius: 6px; }
 
-  /* Footer */
-  footer {
-    background: #060F17;
-    border-top: 1px solid var(--border);
-    padding: 10px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 11.5px;
-    color: var(--text-dim);
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .footer-links a { color: var(--river-glow); text-decoration: none; margin-left: 12px; }
+  .timeline-bar { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-top: 1px solid var(--line); }
+  .btn-play { display: grid; place-items: center; flex: 0 0 40px; height: 40px; border: 1px solid var(--ink); border-radius: 6px; background: var(--ink); color: white; }
+  .btn-play:hover { background: var(--blue); border-color: var(--blue); }
+  .scrubber-wrap { flex: 1; min-width: 0; }
+  .scrubber-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .scrubber-head strong { color: var(--ink); font-weight: 600; }
+  #currentHourDisplay { color: var(--blue); }
+  .scrubber-slider { display: block; width: 100%; margin: 4px 0 0; accent-color: var(--blue); cursor: pointer; }
+  .timeline-ticks { display: flex; justify-content: space-between; padding-inline: 2px; margin-top: 4px; color: var(--muted); font-size: 11px; }
+
+  .col-sidebar { min-width: 0; border-top: 2px solid var(--ink); }
+  .sidebar-section { padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .section-title { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 12px; }
+  .section-title h2 { font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .section-tag { color: var(--muted); font-size: 12px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--line); gap: 1px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .kpi-card { min-width: 0; padding: 12px; background: var(--surface); }
+  .kpi-val { font-size: clamp(22px, 2.4vw, 30px); line-height: 1.15; }
+  .kpi-card.info .kpi-val { color: var(--blue); }
+  .kpi-lbl { margin-top: 4px; font-size: 13px; color: var(--secondary); }
+  .api-button { color: var(--blue); }
+  .api-button:hover { background: var(--raised); }
+  .api-button:disabled { opacity: .65; cursor: wait; }
+  #apiStatus { color: var(--secondary); font-size: 13px; }
+  #apiStatus:not(:empty) { margin-top: 8px; }
+  .survival-card { background: var(--surface); padding: 16px; border: 1px solid var(--line); border-inline-start: 3px solid var(--shelter); border-radius: 8px; }
+  .survival-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 12px; }
+  .survival-card-head h3 { font-size: 17px; font-weight: 600; }
+  .risk-label { color: var(--secondary); font-size: 12px; font-weight: 600; }
+  .risk-label[data-risk="CRITICAL"] { color: var(--flooded); }
+  .risk-label[data-risk="HIGH"] { color: var(--road); }
+  .survival-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-block: 12px; padding-block: 8px; border-block: 1px solid var(--line); }
+  .sm-lbl { font-size: 12px; color: var(--muted); }
+  .sm-val { font-size: 17px; }
+  #spAssignedShelter, .action-checklist { color: var(--secondary); font-size: 13px; }
+  .action-checklist { margin: 8px 0 0; padding-inline-start: 18px; }
+  .action-checklist li + li { margin-top: 4px; }
+  .road-row, .alert-card { padding: 12px 0; border-top: 1px solid var(--line); }
+  .road-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 12px; }
+  .road-name, .alert-card-head { font-weight: 600; }
+  .road-horizon { color: var(--muted); font-size: 12px; }
+  .road-status-pill { flex-shrink: 0; max-width: 40%; font-size: 12px; text-align: end; }
+  .road-status-pill.closed { color: var(--flooded); }
+  .road-status-pill.at_risk { color: var(--road); }
+  .alert-card { color: var(--secondary); font-size: 13px; }
+  .alert-card-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-bottom: 4px; color: var(--ink); }
+
+  footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 12px 24px; border-top: 1px solid var(--line); padding-block: 16px 24px; color: var(--muted); font-size: 12px; }
+  #teamFoot { display: block; margin-top: 4px; }
+  .footer-links { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .footer-links a { text-decoration: none; }
   .footer-links a:hover { text-decoration: underline; }
 
-  /* Leaflet custom popups */
-  .leaflet-popup-content-wrapper {
-    background: #0D1F2D !important;
-    color: #fff !important;
-    border: 1px solid var(--border-accent);
-    border-radius: 8px;
+  @media (max-width: 920px) {
+    main { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .col-map { position: static; }
   }
-  .leaflet-popup-tip { background: #0D1F2D !important; }
+  @media (max-width: 600px) {
+    .notice { padding-inline: 16px; flex-wrap: wrap; }
+    header, main, footer { width: calc(100% - 32px); }
+    header { padding-block: 16px; }
+    .brand-block { width: 100%; }
+    .gauge-widget { padding-inline: 0; border: 0; gap: 8px; }
+    .gauge-meta { min-width: 80px; }
+    .map-heading h2 { font-size: 21px; }
+    .map-heading { align-items: flex-start; }
+    .station-picker select { max-width: min(264px, 70vw); }
+    .pills-container { width: 100%; }
+    .map-search-bar { padding-inline: 8px; }
+    #leafletMap { height: 390px; }
+    .map-legend-card { padding: 4px 8px; font-size: 11px; }
+    .section-title { margin-bottom: 8px; }
+  }
 </style>
 </head>
 <body>
 
-<!-- 1. OFFICIAL BANGLADESH GOVERNMENT EMERGENCY STRIP -->
-<div class="gov-strip">
-  <div class="gov-left">
-    <span class="gov-badge">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</span>
-    <span id="govMinistry">দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয় · পানি উন্নয়ন বোর্ড (BWDB)</span>
+<!-- Demo data notice -->
+<div class="notice">
+  <div class="notice-label">
+    <strong id="demoBadge">হ্যাকাথন ডেমো</strong>
+    <span id="demoNotice">সিমুলেশনের নমুনা তথ্য</span>
   </div>
-  <div class="gov-right">
-    <span id="govNetworkStatus">🟢 জাতীয় বন্যা সংকেত নেটওয়ার্ক: সক্রিয়</span>
-    <span class="hotline">📞 জরুরি দুর্যোগ নিয়ন্ত্রণ কক্ষ: ১০৯০ / ৯৯৯</span>
-  </div>
+  <span id="demoUse">বাস্তব জরুরি সিদ্ধান্তের জন্য সরকারি সতর্কতা অনুসরণ করুন।</span>
 </div>
 
 <!-- 2. MAIN HEADER -->
 <header>
   <div class="brand-block">
-    <div class="logo-icon">🌊</div>
     <div class="brand-text">
       <h1>FloodLens <span>Bangladesh</span></h1>
-      <div class="brand-sub" id="headerTagline">হাইপার-লোকাল বন্যা পূর্বাভাস ও জীবনরক্ষাকারী স্থানান্তর নির্দেশিকা</div>
+      <div class="brand-sub" id="headerTagline">এলাকাভিত্তিক বন্যা ও আশ্রয় পরিকল্পনার সিমুলেশন</div>
     </div>
-  </div>
-
-  <!-- Station Picker Dropdown -->
-  <div class="station-picker">
-    <label for="stationSelect" id="lblStation">স্টেশন:</label>
-    <select id="stationSelect" onchange="changeStation(this.value)">
-      <option value="sunamganj" selected>সুনামগঞ্জ (সুরমা নদী — হাওর বেসিন)</option>
-      <option value="kurigram">কুড়িগ্রাম (ব্রহ্মপুত্র নদ — উত্তরাঞ্চল)</option>
-      <option value="sirajganj">সিরাজগঞ্জ (যমুনা নদী — মধ্যবর্তী)</option>
-      <option value="sylhet">সিলেট সদর (কুশিয়ারা নদী)</option>
-    </select>
   </div>
 
   <!-- River Gauge Widget -->
   <div class="gauge-widget">
     <div class="gauge-meta">
       <div class="gauge-num num" id="valGauge">5.08m</div>
-      <div class="gauge-lbl" id="lblGaugeStatus">বর্তমান পানি সমতল</div>
+      <div class="gauge-lbl" id="lblGaugeStatus">সিমুলেশনের পানি সমতল</div>
     </div>
     <div class="gauge-meter-box">
-      <div class="gauge-track">
-        <div class="gauge-fill" id="barGauge" style="width: 63%; background: var(--river-glow);"></div>
+      <div class="gauge-track" aria-hidden="true">
+        <div class="gauge-fill" id="barGauge"></div>
+        <span class="gauge-threshold" id="gaugeThreshold"></span>
       </div>
       <div class="gauge-stages">
-        <span>স্বাভাবিক</span>
         <span class="stage-danger" id="txtDangerMark">বিপদসীমা ৬.৫০মি</span>
-        <span>মারাত্মক ৮.০০মি</span>
+        <span id="severeMark">মারাত্মক ৮.০০মি</span>
       </div>
     </div>
   </div>
@@ -531,7 +281,7 @@
   <!-- Actions -->
   <div class="top-actions">
     <button class="btn-siren" id="sirenBtn" onclick="toggleVoiceAlert()">
-      <span id="sirenIcon">📢</span> <span id="sirenText">জরুরি অডিও সতর্কতা</span>
+      <span id="sirenIcon" class="icon" aria-hidden="true"></span> <span id="sirenText">নমুনা অডিও সতর্কতা</span>
     </button>
     <button class="btn-lang" onclick="toggleLanguage()">
       <span id="langSwitchText">English</span>
@@ -543,49 +293,68 @@
 <main>
   <!-- MAP COLUMN -->
   <div class="col-map">
-    <!-- Search Bar -->
-    <div class="map-search-bar">
-      <span>🔍</span>
-      <input type="text" id="searchInput" placeholder="আপনার গ্রাম বা বাড়ি অনুসন্ধান করুন (যেমন: চর বন্দর, তাহিরপুর)..." oninput="handleSearch(this.value)">
-      <div class="pills-container">
-        <span class="search-pill" onclick="quickSelect('B0002')">চর বন্দর</span>
-        <span class="search-pill" onclick="quickSelect('S1')">আশ্রয়কেন্দ্র #১</span>
-        <span class="search-pill" onclick="quickSelect('B0014')">বাজারঘাট</span>
+    <div class="map-heading">
+      <h2 id="mapHeading">বন্যা পরিস্থিতির মানচিত্র</h2>
+      <div class="station-picker">
+        <label for="stationSelect" id="lblStation">স্টেশন:</label>
+        <select id="stationSelect" onchange="changeStation(this.value)">
+          <option value="sunamganj" selected>সুনামগঞ্জ (সুরমা নদী — হাওর বেসিন)</option>
+          <option value="kurigram">কুড়িগ্রাম (ব্রহ্মপুত্র নদ — উত্তরাঞ্চল)</option>
+          <option value="sirajganj">সিরাজগঞ্জ (যমুনা নদী — মধ্যবর্তী)</option>
+          <option value="sylhet">সিলেট সদর (কুশিয়ারা নদী)</option>
+        </select>
       </div>
     </div>
-
-    <!-- Map Container -->
-    <div id="leafletMap"></div>
-
-    <!-- Map Legend -->
-    <div class="map-legend-card">
-      <div class="legend-item">
-        <span class="legend-swatch" style="background:#006A4E; border:1px solid #fff;"></span>
-        <span id="legShelter">নিরাপদ বন্যা আশ্রয়কেন্দ্র (উঁচু টিলা)</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-swatch" style="background:#E63946;"></span>
-        <span id="legCritical">ঝুঁকিপূর্ণ বসতবাড়ি (&lt; ১০ ঘণ্টা)</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-swatch" style="background:rgba(46, 150, 215, 0.65);"></span>
-        <span id="legWater">প্লাবিত নিম্নাঞ্চল (হাওর অববাহিকা)</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-swatch" style="background:#F4A261;"></span>
-        <span id="legRoad">চলাচলের রাস্তা (ঝুঁকিপূর্ণ)</span>
-      </div>
-    </div>
-
-    <!-- Timeline Scrubber -->
-    <div class="timeline-bar">
-      <button class="btn-play" id="btnPlay" onclick="togglePlaySimulation()">▶</button>
-      <div class="scrubber-wrap">
-        <div class="scrubber-head">
-          <span><strong id="lblTimeline">বন্যা বিস্তারের সময়কাল:</strong> <span class="num" id="currentHourDisplay">+১ ঘণ্টা</span></span>
-          <span id="timelineForecastRange">আগামী ৭২ ঘণ্টার সিমুলেশন পূর্বাভাস</span>
+    <div class="map-frame">
+      <!-- Search Bar -->
+      <div class="map-search-bar">
+        <span id="searchIcon" class="icon" aria-hidden="true"></span>
+        <input type="text" id="searchInput" aria-label="নমুনা বাড়ি খুঁজুন" placeholder="নাম বা বাড়ির আইডি খুঁজুন" oninput="handleSearch(this.value)">
+        <div class="pills-container">
+          <button type="button" class="search-pill" id="quickHome" onclick="quickSelect(activeStation.households[0].id)">নমুনা বাড়ি</button>
+          <button type="button" class="search-pill" id="quickShelter" onclick="quickSelect(activeStation.shelters[0].id)">নমুনা আশ্রয়কেন্দ্র</button>
         </div>
-        <input type="range" class="scrubber-slider" id="hourSlider" min="0" max="72" value="1" oninput="onHourSliderChange(this.value)">
+      </div>
+
+      <div class="map-stage">
+      <div id="leafletMap"></div>
+
+      <!-- Map Legend -->
+      <div class="map-legend-card">
+        <div class="legend-item">
+          <span class="legend-swatch legend-shelter" aria-hidden="true"></span>
+          <span id="legShelter">নমুনা আশ্রয়কেন্দ্র</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch legend-home" aria-hidden="true"></span>
+          <span id="legCritical">প্লাবিত বাড়ি</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch legend-water" aria-hidden="true"></span>
+          <span id="legWater">সিমুলেশনে প্লাবিত এলাকা</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch legend-road" aria-hidden="true"></span>
+          <span id="legRoad">ঝুঁকিপূর্ণ সড়ক</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch legend-route" aria-hidden="true"></span>
+          <span id="legRoute">আশ্রয়কেন্দ্রের দিক</span>
+        </div>
+      </div>
+
+      </div>
+      <!-- Timeline Scrubber -->
+      <div class="timeline-bar">
+        <button class="btn-play" id="btnPlay" aria-label="সিমুলেশন চালান বা থামান" onclick="togglePlaySimulation()" aria-pressed="false"></button>
+        <div class="scrubber-wrap">
+          <div class="scrubber-head">
+            <span><strong id="lblTimeline">সিমুলেশনের সময়</strong> <span class="num" id="currentHourDisplay">+১ ঘণ্টা</span></span>
+            <span id="timelineForecastRange">৭২ ঘণ্টার সিমুলেশন</span>
+          </div>
+          <input type="range" class="scrubber-slider" id="hourSlider" aria-label="সিমুলেশনের ঘণ্টা" min="0" max="72" value="1" oninput="onHourSliderChange(this.value)">
+          <div class="timeline-ticks num" id="timelineTicks" aria-hidden="true"><span>০</span><span>২৪</span><span>৪৮</span><span>৭২</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -595,10 +364,10 @@
     <!-- Impact Summary KPIs -->
     <div class="sidebar-section">
       <div class="section-title">
-        <span id="titleSummary">সার্বিক ক্ষয়ক্ষতি পূর্বাভাস</span>
+        <h2 id="titleSummary">নমুনা প্রভাব</h2>
         <span class="section-tag" id="tagLocality">সুনামগঞ্জ হাওর মডেল</span>
       </div>
-      <div class="kpi-row">
+      <div class="kpi-grid">
         <div class="kpi-card critical">
           <div class="kpi-val num" id="kpiAtRisk">৮৯.২%</div>
           <div class="kpi-lbl" id="lblKpiAtRisk">বসতবাড়ি প্লাবনের ঝুঁকিতে</div>
@@ -607,8 +376,6 @@
           <div class="kpi-val num" id="kpiCritical">৮৯টি</div>
           <div class="kpi-lbl" id="lblKpiCritical">জরুরি স্থানান্তর প্রয়োজন (&lt;১০ঘণ্টা)</div>
         </div>
-      </div>
-      <div class="kpi-row" style="margin-top: 8px;">
         <div class="kpi-card warning">
           <div class="kpi-val num" id="kpiRoads">২ / ৩টি</div>
           <div class="kpi-lbl" id="lblKpiRoads">সংযোগ সড়ক জলমগ্ন</div>
@@ -620,16 +387,22 @@
       </div>
     </div>
 
+    <div class="sidebar-section">
+      <div class="section-title"><h2 id="apiTitle">মডেলের নমুনা ফলাফল</h2></div>
+      <button type="button" class="api-button" id="apiCheck">API মডেল চালান</button>
+      <p id="apiStatus" role="status"></p>
+    </div>
+
     <!-- Personal Survival Plan Card (Dynamic for Clicked/Searched Home) -->
     <div class="sidebar-section">
       <div class="section-title">
-        <span id="titleSurvivalPlan">ব্যক্তিগত স্থানান্তর পরিকল্পনা</span>
-        <span class="section-tag" style="color:var(--bd-green-light); border-color:var(--bd-green);" id="tagSelectedHome">বাড়ি #B0002</span>
+        <h2 id="titleSurvivalPlan">পরিবারের স্থানান্তর পরিকল্পনা</h2>
+        <span class="section-tag" id="tagSelectedHome">বাড়ি #B0002</span>
       </div>
       <div class="survival-card">
         <div class="survival-card-head">
-          <h4 id="spHomeName">আব্দুল করিমের পরিবার (চর বন্দর)</h4>
-          <span class="badge-danger" id="spRiskBadge">জরুরি ঝুঁকি (CRITICAL)</span>
+          <h3 id="spHomeName">আব্দুল করিমের পরিবার (চর বন্দর)</h3>
+          <span class="risk-label" id="spRiskBadge">জরুরি ঝুঁকি (CRITICAL)</span>
         </div>
         <div class="survival-metrics">
           <div class="sm-item">
@@ -641,13 +414,13 @@
             <div class="sm-val num" id="spValShelterDist">২.০৭ কিমি</div>
           </div>
         </div>
-        <p style="font-size:12px; color:var(--text-muted);" id="spAssignedShelter">
-          🏫 <strong>নির্ধারিত আশ্রয়:</strong> চর বন্দর প্রাথমিক বিদ্যালয় আশ্রয়কেন্দ্র
+        <p id="spAssignedShelter">
+          <strong>নির্ধারিত আশ্রয়:</strong> চর বন্দর প্রাথমিক বিদ্যালয় আশ্রয়কেন্দ্র
         </p>
         <ul class="action-checklist" id="spActionList">
-          <li>✅ শিশু, প্রবীণ ও জরুরি ওষুধ আগে সরিয়ে নিন।</li>
-          <li>✅ উপজেলা সংযোগ সড়ক এখনো সচল; এখনই রওনা হন।</li>
-          <li>✅ জমির ফসল ও গবাদিপশু উঁচু বাঁধে নিরাপদ করুন।</li>
+          <li>শিশু, প্রবীণ ও জরুরি ওষুধ আগে সরিয়ে নিন।</li>
+          <li>সড়কের অবস্থা নিচের তালিকায় দেখুন।</li>
+          <li>জমির ফসল ও গবাদিপশু উঁচু বাঁধে নিরাপদ করুন।</li>
         </ul>
       </div>
     </div>
@@ -655,7 +428,7 @@
     <!-- Road Access Status -->
     <div class="sidebar-section">
       <div class="section-title">
-        <span id="titleRoads">নিরাপদ যাতায়াত সড়ক নেটওয়ার্ক</span>
+        <h2 id="titleRoads">সড়কের অবস্থা</h2>
         <span class="section-tag" id="tagRoadCount">৩টি রাস্তা মনিটরকৃত</span>
       </div>
       <div id="roadsListContainer">
@@ -664,9 +437,9 @@
     </div>
 
     <!-- Priority Localized Alerts -->
-    <div class="sidebar-section" style="flex:1;">
+    <div class="sidebar-section">
       <div class="section-title">
-        <span id="titleAlerts">এলাকাভিত্তিক সরাসরি নির্দেশনা</span>
+        <h2 id="titleAlerts">পরিবারের নমুনা সতর্কতা</h2>
         <span class="section-tag" id="tagAlertCount">৫টি জরুরি অ্যালার্ট</span>
       </div>
       <div id="alertsContainer">
@@ -680,12 +453,12 @@
 <footer>
   <div>
     <span>FloodLens Bangladesh · আন্তর্জাতিক এআই বিল্ডার্স কংগ্রেস ও ক্লাউডক্যাম্প বাংলাদেশ হ্যাকাথন ২০২৬</span>
-    <span style="margin-left: 12px; color:var(--text-muted);" id="teamFoot">টিম: ক্যান্ডি ক্রাশ (Nahid Ibn Zaman, Farhan Ishraq Ifti, Tahmid Rashid Pranjol, Mahmuda Khanum)</span>
+    <span id="teamFoot">টিম: ক্যান্ডি ক্রাশ (Nahid Ibn Zaman, Farhan Ishraq Ifti, Tahmid Rashid Pranjol, Mahmuda Khanum)</span>
   </div>
   <div class="footer-links">
     <a href="https://github.com/nahidzaman1996271-sketch/floodlens" target="_blank">GitHub Repository</a>
     <a href="https://github.com/nahidzaman1996271-sketch/floodlens/blob/main/SUBMISSION_DRAFT.md" target="_blank">Submission Draft</a>
-    <a href="javascript:void(0)" onclick="openApiConfig()">API Backend (Render)</a>
+    <a id="apiDocs" href="https://floodlens-api-vq31.onrender.com/docs" target="_blank" rel="noopener">API docs</a>
   </div>
 </footer>
 
@@ -693,62 +466,91 @@
 /* =====================================================================
    BILINGUAL DICTIONARY (BANGLA & ENGLISH)
    ===================================================================== */
-let currentLang = 'bn'; // Default Bangla for true Bangladeshi feel
+let currentLang = 'bn';
+
+// Lucide line icons, https://lucide.dev/license
+const iconPaths = {
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  audio: '<path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7m3-10a9 9 0 0 1 0 13"/>',
+  house: '<path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-7h6v7"/>',
+  shelter: '<path d="M12 22v-5m-7 5V9m14 13V9M3 22h18M2 10l10-7 10 7M8 13h.01M16 13h.01M12 13h.01"/>',
+  play: '<path d="m8 5 12 7-12 7z"/>',
+  pause: '<path d="M9 5v14m6-14v14"/>'
+};
+
+function lineIcon(name) {
+  return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconPaths[name]}</svg>`;
+}
+
+function formatNumber(value, digits = 0) {
+  return new Intl.NumberFormat(currentLang === 'bn' ? 'bn-BD' : 'en', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  }).format(value);
+}
+
+function riskLabel(risk) {
+  const bn = { CRITICAL: 'গুরুতর', HIGH: 'উচ্চ', WATCH: 'নজরদারি' };
+  const en = { CRITICAL: 'Critical', HIGH: 'High', WATCH: 'Watch' };
+  return (currentLang === 'bn' ? bn : en)[risk] ?? risk;
+}
 
 const I18N = {
   bn: {
-    govMinistry: "দুর্যোগ ব্যবস্থাপনা ও ত্রাণ মন্ত্রণালয় · পানি উন্নয়ন বোর্ড (BWDB)",
-    govNetworkStatus: "🟢 জাতীয় বন্যা সংকেত নেটওয়ার্ক: সক্রিয়",
-    headerTagline: "হাইপার-লোকাল বন্যা পূর্বাভাস ও জীবনরক্ষাকারী স্থানান্তর নির্দেশিকা",
-    lblStation: "স্টেশন:",
-    lblGaugeStatus: "বর্তমান পানি সমতল",
-    txtDangerMark: "বিপদসীমা ৬.৫০মি",
-    sirenText: "জরুরি অডিও সতর্কতা",
+    mapHeading: "বন্যা পরিস্থিতির মানচিত্র",
+    legRoute: "আশ্রয়কেন্দ্রের দিক",
+    demoBadge: "হ্যাকাথন ডেমো",
+    demoNotice: "সিমুলেশনের নমুনা তথ্য",
+    demoUse: "বাস্তব জরুরি সিদ্ধান্তের জন্য সরকারি সতর্কতা অনুসরণ করুন।",
+    headerTagline: "এলাকাভিত্তিক বন্যা ও আশ্রয় পরিকল্পনার সিমুলেশন",
+    lblStation: "স্টেশন",
+    lblGaugeStatus: "সিমুলেশনের পানি সমতল",
+    sirenText: "নমুনা অডিও সতর্কতা",
     sirenStop: "অডিও বন্ধ করুন",
     langSwitchText: "English",
-    searchPlaceholder: "আপনার গ্রাম বা বাড়ি অনুসন্ধান করুন (যেমন: চর বন্দর, তাহিরপুর)...",
-    legShelter: "নিরাপদ বন্যা আশ্রয়কেন্দ্র (উঁচু টিলা)",
-    legCritical: "ঝুঁকিপূর্ণ বসতবাড়ি (< ১০ ঘণ্টা)",
-    legWater: "প্লাবিত নিম্নাঞ্চল (হাওর অববাহিকা)",
-    legRoad: "চলাচলের রাস্তা (ঝুঁকিপূর্ণ)",
-    lblTimeline: "বন্যা বিস্তারের সময়কাল:",
-    timelineForecastRange: "আগামী ৭২ ঘণ্টার সিমুলেশন পূর্বাভাস",
-    titleSummary: "সার্বিক ক্ষয়ক্ষতি পূর্বাভাস",
+    searchPlaceholder: "নাম বা বাড়ির আইডি খুঁজুন",
+    legShelter: "নমুনা আশ্রয়কেন্দ্র",
+    legCritical: "প্লাবিত বাড়ি",
+    legWater: "সিমুলেশনে প্লাবিত এলাকা",
+    legRoad: "ঝুঁকিপূর্ণ সড়ক",
+    lblTimeline: "সিমুলেশনের সময়",
+    timelineForecastRange: "৭২ ঘণ্টার সিমুলেশন",
+    titleSummary: "নমুনা প্রভাব",
     lblKpiAtRisk: "বসতবাড়ি প্লাবনের ঝুঁকিতে",
     lblKpiCritical: "জরুরি স্থানান্তর প্রয়োজন (<১০ঘণ্টা)",
     lblKpiRoads: "সংযোগ সড়ক জলমগ্ন",
     lblKpiTime: "বিপদসীমা অতিক্রমের বাকি",
-    titleSurvivalPlan: "ব্যক্তিগত স্থানান্তর পরিকল্পনা",
-    titleRoads: "নিরাপদ যাতায়াত সড়ক নেটওয়ার্ক",
-    titleAlerts: "এলাকাভিত্তিক সরাসরি নির্দেশনা",
-    hotline: "📞 জরুরি দুর্যোগ নিয়ন্ত্রণ কক্ষ: ১০৯০ / ৯৯৯"
+    titleSurvivalPlan: "পরিবারের স্থানান্তর পরিকল্পনা",
+    titleRoads: "সড়কের অবস্থা",
+    titleAlerts: "পরিবারের নমুনা সতর্কতা",
   },
   en: {
-    govMinistry: "Ministry of Disaster Management & Relief · Bangladesh Water Development Board (BWDB)",
-    govNetworkStatus: "🟢 National Early Warning Flood Sensor Grid: LIVE",
-    headerTagline: "Hyper-local Street-level Flood Impact Forecasting & Survival Dispatch",
-    lblStation: "STATION:",
-    lblGaugeStatus: "Current River Gauge",
-    txtDangerMark: "Danger 6.50m",
-    sirenText: "Voice Emergency Alert",
+    mapHeading: "Flood scenario map",
+    legRoute: "Direction to shelter",
+    demoBadge: "Hackathon demo",
+    demoNotice: "Simulated scenario data",
+    demoUse: "Follow official warnings for real emergencies.",
+    headerTagline: "Neighborhood flood and shelter planning simulation",
+    lblStation: "Station",
+    lblGaugeStatus: "Simulated river level",
+    sirenText: "Play sample voice alert",
     sirenStop: "Stop Audio",
     langSwitchText: "বাংলা",
-    searchPlaceholder: "Search your village or homestead (e.g. Char Bandar, Tahirpur)...",
-    legShelter: "Designated Safe Flood Shelter (High Ground)",
-    legCritical: "Homestead at Critical Risk (< 10h)",
-    legWater: "Inundated Floodplain (Haor Basin)",
-    legRoad: "Evacuation Road Network (At Risk)",
-    lblTimeline: "Simulated Flood Horizon:",
-    timelineForecastRange: "72-Hour Monsoonal Hydrological Surge",
-    titleSummary: "Impact Summary & KPIs",
+    searchPlaceholder: "Search by name or household ID",
+    legShelter: "Sample shelter",
+    legCritical: "Flooded home",
+    legWater: "Simulated flood extent",
+    legRoad: "Road at risk",
+    lblTimeline: "Forecast hour",
+    timelineForecastRange: "72-hour simulation",
+    titleSummary: "Scenario impact",
     lblKpiAtRisk: "Buildings at Inundation Risk",
     lblKpiCritical: "Critical Evacuation Needed (<10h)",
     lblKpiRoads: "Egress Roads Cut Off",
     lblKpiTime: "Hours to Danger Threshold",
-    titleSurvivalPlan: "Personal Evacuation Plan",
-    titleRoads: "Road Passability Status",
-    titleAlerts: "Prioritized Household Directives",
-    hotline: "📞 National Disaster Hotline: 1090 / 999"
+    titleSurvivalPlan: "Household plan",
+    titleRoads: "Road conditions",
+    titleAlerts: "Sample household alerts",
   }
 };
 
@@ -839,25 +641,24 @@ const STATIONS = {
       { id: "S1", name: "বালাগঞ্জ সরকারি কলেজ আশ্রয়কেন্দ্র", nameEn: "Balaganj Govt College Shelter", coords: [24.902, 91.880], elevation: 16.5, capacity: 1350 }
     ],
     roads: [
-      { id: "R1", name: "কুশিয়ারা তীরবর্তী শেরপুর রোড", nameEn: "Sherpur Kushiyara Riverside Road", hoursToCut: 2, status: "closed", path: [[24.885, 89.860], [24.895, 89.870], [24.902, 89.880]] }
+      { id: "R1", name: "কুশিয়ারা তীরবর্তী শেরপুর রোড", nameEn: "Sherpur Kushiyara Riverside Road", hoursToCut: 2, status: "closed", path: [[24.885, 91.860], [24.895, 91.870], [24.902, 91.880]] }
     ],
     households: [
-      { id: "B0301", name: "জালাল আহমদ চৌধুরীর বাড়ি", nameEn: "Jalal Ahmed Choudhury Bari", coords: [24.890, 89.865], hours: 2, risk: "CRITICAL", shelter: "S1", dist: 1.70 }
+      { id: "B0301", name: "জালাল আহমদ চৌধুরীর বাড়ি", nameEn: "Jalal Ahmed Choudhury Bari", coords: [24.890, 91.865], hours: 2, risk: "CRITICAL", shelter: "S1", dist: 1.70 }
     ]
   }
 };
 
-let activeStationKey = 'sunamganj';
-let activeStation = STATIONS[activeStationKey];
+let activeStation = STATIONS.sunamganj;
 let currentSimulationHour = 1;
 let map = null;
 let floodLayerGroup = null;
 let markersLayerGroup = null;
+const homePoints = new Map();
 let routePolyline = null;
 let simulationInterval = null;
 let isPlaying = false;
 let selectedHousehold = null;
-let isAudioPlaying = false;
 
 /* =====================================================================
    LEAFLET MAP INITIALIZATION
@@ -865,13 +666,12 @@ let isAudioPlaying = false;
 function initMap() {
   map = L.map('leafletMap', {
     zoomControl: true,
-    attributionControl: false
-  }).setView(activeStation.coords, activeStation.zoom);
+    attributionControl: true
+  }).setView(activeStation.coords, window.innerWidth <= 600 ? activeStation.zoom - 1 : activeStation.zoom);
 
-  // High contrast clean dark tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
-    subdomains: 'abcd',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
   }).addTo(map);
 
   floodLayerGroup = L.layerGroup().addTo(map);
@@ -883,9 +683,10 @@ function initMap() {
 /* =====================================================================
    RENDER MAP ELEMENTS (SURMA RIVER, INUNDATION, SHELTERS, HOMES)
    ===================================================================== */
-function renderStationMapElements() {
+function renderStationMapElements({ pan = false } = {}) {
   floodLayerGroup.clearLayers();
   markersLayerGroup.clearLayers();
+  homePoints.clear();
   if (routePolyline) map.removeLayer(routePolyline);
 
   const c = activeStation.coords;
@@ -899,10 +700,10 @@ function renderStationMapElements() {
     [c[0] + 0.04, c[1] + 0.03]
   ];
   L.polyline(riverCoords, {
-    color: '#0077B6',
-    weight: 9,
+    color: '#23688e',
+    weight: 4,
     opacity: 0.85
-  }).bindTooltip(currentLang === 'bn' ? "সুরমা নদী (প্রধান চ্যানেল)" : "Surma River Main Channel", { permanent: false }).addTo(markersLayerGroup);
+  }).bindTooltip(currentLang === 'bn' ? "নমুনা নদীপথ" : "Simulated river channel", { permanent: false }).addTo(markersLayerGroup);
 
   // 2. Dynamic Flood Polygon (Simulated water wavefront growing with hours)
   renderFloodInundation(currentSimulationHour);
@@ -910,48 +711,49 @@ function renderStationMapElements() {
   // 3. Roads with dynamic styling
   activeStation.roads.forEach(r => {
     const isClosed = currentSimulationHour >= r.hoursToCut;
-    const color = isClosed ? '#E63946' : '#F4A261';
+    const color = isClosed ? '#943d33' : '#895b23';
     L.polyline(r.path, {
       color: color,
       weight: 4,
       dashArray: isClosed ? '5, 8' : null
-    }).bindPopup(`<b>${currentLang === 'bn' ? r.name : r.nameEn}</b><br>${isClosed ? (currentLang === 'bn' ? '⛔ রাস্তা জলমগ্ন ও অবরুদ্ধ' : '⛔ Road Submerged & Blocked') : (currentLang === 'bn' ? '⚠️ ঝুঁকি রয়েছে — দ্রুত চলাচল করুন' : '⚠️ At Risk — Evacuate Soon')}`).addTo(markersLayerGroup);
+    }).bindPopup(`<b>${currentLang === 'bn' ? r.name : r.nameEn}</b><br>${isClosed ? (currentLang === 'bn' ? 'রাস্তা জলমগ্ন ও অবরুদ্ধ' : 'Road Submerged & Blocked') : (currentLang === 'bn' ? 'সিমুলেশনে সড়ক সচল' : 'Passable in this scenario')}`).addTo(markersLayerGroup);
   });
 
-  // 4. Shelters
-  activeStation.shelters.forEach(s => {
-    const shelterIcon = L.divIcon({
+  const bn = currentLang === 'bn';
+  activeStation.shelters.forEach(shelter => {
+    const name = bn ? shelter.name : shelter.nameEn;
+    const icon = L.divIcon({
       className: 'shelter-marker-icon',
-      html: `<div style="background:#006A4E; color:#fff; border:2.5px solid #fff; border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 0 16px #00A878; cursor:pointer;" title="${s.name}">🏫</div>`,
-      iconSize: [34, 34],
-      iconAnchor: [17, 17]
+      html: `<span class="map-point map-point--shelter">${lineIcon('shelter')}</span>`,
+      iconSize: [26, 26],
+      iconAnchor: [13, 13]
     });
-    L.marker(s.coords, { icon: shelterIcon }).addTo(markersLayerGroup).bindPopup(`
-      <div style="font-family:'Hind Siliguri', sans-serif;">
-        <h3 style="color:#00A878; font-size:14px; margin-bottom:4px;">🏫 ${currentLang === 'bn' ? s.name : s.nameEn}</h3>
-        <p style="font-size:12px; margin:2px 0;">⛰️ <strong>${currentLang === 'bn' ? 'উঁচু টিলার উচ্চতা:' : 'Elevation:'}</strong> +${s.elevation}m (${currentLang === 'bn' ? 'বন্যা সুরক্ষিত' : 'Safe from surge'})</p>
-        <p style="font-size:12px; margin:2px 0;">👥 <strong>${currentLang === 'bn' ? 'ধারণক্ষমতা:' : 'Capacity:'}</strong> ${s.capacity} ${currentLang === 'bn' ? 'জন' : 'people'}</p>
-        <p style="font-size:12px; color:#FFE66D; margin-top:4px;">✅ ${currentLang === 'bn' ? 'জরুরি খাবার, বিশুদ্ধ পানি ও চিকিৎসক প্রস্তুত' : 'Relief supplies & doctors on standby'}</p>
-      </div>
+    const marker = L.marker(shelter.coords, { icon, title: name }).addTo(markersLayerGroup);
+    marker.getElement().setAttribute('aria-label', name);
+    marker.bindPopup(`
+      <h3>${name}</h3>
+      <p><strong>${bn ? 'উচ্চতা' : 'Elevation'}</strong> ${formatNumber(shelter.elevation, 1)} m</p>
+      <p><strong>${bn ? 'ধারণক্ষমতা' : 'Capacity'}</strong> ${formatNumber(shelter.capacity)} ${bn ? 'জন' : 'people'}</p>
     `);
   });
 
-  // 5. Households
-  activeStation.households.forEach(h => {
-    const isFlooded = currentSimulationHour >= h.hours;
-    const color = isFlooded ? '#E63946' : '#F4A261';
-    const homeIcon = L.divIcon({
+  activeStation.households.forEach(home => {
+    const flooded = currentSimulationHour >= home.hours;
+    const icon = L.divIcon({
       className: 'home-marker-icon',
-      html: `<div style="background:${color}; color:#fff; border:2px solid #fff; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:11px; box-shadow:0 0 8px ${color}; cursor:pointer;" onclick="selectHouseholdById('${h.id}')">🏠</div>`,
-      iconSize: [22, 22],
-      iconAnchor: [11, 11]
+      html: `<span class="map-point${flooded ? ' map-point--flooded' : ''}">${lineIcon('house')}</span>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
     });
-    const marker = L.marker(h.coords, { icon: homeIcon }).addTo(markersLayerGroup);
-    marker.on('click', () => selectHouseholdById(h.id));
+    const name = bn ? home.name : home.nameEn;
+    const marker = L.marker(home.coords, { icon, title: name }).addTo(markersLayerGroup);
+    marker.getElement().setAttribute('aria-label', name);
+    homePoints.set(home.id, marker.getElement().firstElementChild);
+    marker.on('click', () => selectHouseholdById(home.id));
   });
 
-  // Select initial household
-  selectHouseholdById(activeStation.households[0].id);
+  const household = selectedHousehold ?? activeStation.households[0];
+  selectHouseholdById(household.id, { pan });
 }
 
 /* =====================================================================
@@ -976,9 +778,9 @@ function renderFloodInundation(hour) {
   ];
 
   L.polygon(floodPolygon, {
-    color: '#0077B6',
+    color: '#237ca9',
     weight: 1.5,
-    fillColor: '#0096C7',
+    fillColor: '#48a5ce',
     fillOpacity: Math.min(0.55, 0.25 + (hour / 72.0) * 0.3)
   }).addTo(floodLayerGroup);
 }
@@ -986,44 +788,49 @@ function renderFloodInundation(hour) {
 /* =====================================================================
    SELECT HOUSEHOLD & DRAW SAFE ROUTE TO SHELTER
    ===================================================================== */
-function selectHouseholdById(id) {
+function selectHouseholdById(id, { pan = true } = {}) {
   const h = activeStation.households.find(x => x.id === id);
   if (!h) return;
+  homePoints.get(selectedHousehold?.id)?.classList.remove('map-point--selected');
   selectedHousehold = h;
+  homePoints.get(h.id)?.classList.add('map-point--selected');
 
   // Update UI Card
   document.getElementById('tagSelectedHome').textContent = h.id;
+  const badge = document.getElementById('spRiskBadge');
+  badge.dataset.risk = h.risk;
+  badge.textContent = riskLabel(h.risk);
+  document.getElementById('spLblFloodTime').textContent = currentLang === 'bn' ? 'প্লাবনের সময় (সিমুলেশন)' : 'Simulated time to flooding';
+  document.getElementById('spLblShelterDist').textContent = currentLang === 'bn' ? 'আশ্রয়কেন্দ্রের দূরত্ব' : 'Distance to shelter';
   document.getElementById('spHomeName').textContent = (currentLang === 'bn') ? h.name : h.nameEn;
-  document.getElementById('spValFloodTime').textContent = (currentLang === 'bn') ? `${h.hours} ঘণ্টা` : `${h.hours} hour(s)`;
-  document.getElementById('spValShelterDist').textContent = `${h.dist} km`;
+  document.getElementById('spValFloodTime').textContent = (currentLang === 'bn') ? `${formatNumber(h.hours)} ঘণ্টা` : `${formatNumber(h.hours)} h`;
+  document.getElementById('spValShelterDist').textContent = `${formatNumber(h.dist, 2)} ${currentLang === 'bn' ? 'কিমি' : 'km'}`;
 
   const shelter = activeStation.shelters.find(s => s.id === h.shelter) || activeStation.shelters[0];
-  document.getElementById('spAssignedShelter').innerHTML = `🏫 <strong>${currentLang === 'bn' ? 'নির্ধারিত আশ্রয়:' : 'Assigned Shelter:'}</strong> ${(currentLang === 'bn') ? shelter.name : shelter.nameEn}`;
+  document.getElementById('spAssignedShelter').innerHTML = `<strong>${currentLang === 'bn' ? 'নির্ধারিত আশ্রয়:' : 'Assigned Shelter:'}</strong> ${(currentLang === 'bn') ? shelter.name : shelter.nameEn}`;
 
   // Draw Evacuation Route on Map
   if (routePolyline) map.removeLayer(routePolyline);
   routePolyline = L.polyline([h.coords, [(h.coords[0] + shelter.coords[0])/2 + 0.003, (h.coords[1] + shelter.coords[1])/2], shelter.coords], {
-    color: '#00A878',
-    weight: 4,
-    dashArray: '6, 6'
-  }).addTo(map);
+    color: '#285949',
+    weight: 3,
+    dashArray: '6, 5'
+  }).bindTooltip(currentLang === 'bn' ? 'আশ্রয়কেন্দ্রের দিক (নমুনা)' : 'Illustrative direction to shelter').addTo(map);
 
-  map.panTo(h.coords);
+  if (pan) map.panTo(h.coords, { animate: !matchMedia('(prefers-reduced-motion: reduce)').matches });
 }
 
 /* =====================================================================
    CHANGE STATION
    ===================================================================== */
 function changeStation(key) {
-  activeStationKey = key;
   activeStation = STATIONS[key];
+  selectedHousehold = null;
   currentSimulationHour = 1;
   document.getElementById('hourSlider').value = 1;
-  document.getElementById('tagLocality').textContent = (currentLang === 'bn') ? activeStation.localityName : activeStation.localityNameEn;
 
-  map.setView(activeStation.coords, activeStation.zoom);
-  renderStationMapElements();
-  updateSidebarMetrics();
+  map.setView(activeStation.coords, window.innerWidth <= 600 ? activeStation.zoom - 1 : activeStation.zoom);
+  onHourSliderChange(1);
 }
 
 /* =====================================================================
@@ -1031,27 +838,36 @@ function changeStation(key) {
    ===================================================================== */
 function onHourSliderChange(val) {
   currentSimulationHour = parseInt(val, 10);
-  document.getElementById('currentHourDisplay').textContent = `+${currentSimulationHour} ` + (currentLang === 'bn' ? 'ঘণ্টা' : 'hour(s)');
+  document.getElementById('currentHourDisplay').textContent = `+${formatNumber(currentSimulationHour)} ` + (currentLang === 'bn' ? 'ঘণ্টা' : 'hour(s)');
 
   // Water Gauge climbing with storm surge
   const base = activeStation.currentGauge;
   const maxRise = activeStation.severeGauge - base + 0.5;
   const currentLevel = (base + (currentSimulationHour / 72.0) * maxRise).toFixed(2);
-  document.getElementById('valGauge').textContent = `${currentLevel}m`;
+  document.getElementById('valGauge').textContent = `${formatNumber(Number(currentLevel), 2)} m`;
 
   const gaugePct = Math.min(100, (currentLevel / activeStation.severeGauge) * 100);
   const bar = document.getElementById('barGauge');
+  document.getElementById('gaugeThreshold').style.insetInlineStart = (100 * activeStation.dangerGauge / activeStation.severeGauge) + '%';
   bar.style.width = `${gaugePct}%`;
-  bar.style.background = currentLevel >= activeStation.dangerGauge ? 'var(--bd-red)' : 'var(--river-glow)';
+  bar.style.background = currentLevel >= activeStation.dangerGauge ? 'var(--flooded)' : 'var(--blue)';
 
-  renderFloodInundation(currentSimulationHour);
+  const bn = currentLang === 'bn';
+  document.getElementById('txtDangerMark').textContent = bn
+    ? 'বিপদসীমা ' + formatNumber(activeStation.dangerGauge, 2) + 'মি'
+    : 'Danger ' + formatNumber(activeStation.dangerGauge, 2) + 'm';
+  document.getElementById('severeMark').textContent = bn
+    ? 'মারাত্মক ' + formatNumber(activeStation.severeGauge, 2) + 'মি'
+    : 'Severe ' + formatNumber(activeStation.severeGauge, 2) + 'm';
+  renderStationMapElements();
   updateSidebarMetrics();
 }
 
 function togglePlaySimulation() {
   isPlaying = !isPlaying;
   const btn = document.getElementById('btnPlay');
-  btn.textContent = isPlaying ? '❚❚' : '▶';
+  btn.innerHTML = lineIcon(isPlaying ? 'pause' : 'play');
+  btn.setAttribute('aria-pressed', String(isPlaying));
 
   if (isPlaying) {
     simulationInterval = setInterval(() => {
@@ -1069,7 +885,25 @@ function togglePlaySimulation() {
    UPDATE SIDEBAR METRICS, ROADS, AND ALERTS
    ===================================================================== */
 function updateSidebarMetrics() {
-  // Road list
+  const households = activeStation.households;
+  const roads = activeStation.roads;
+  const alerts = households.slice(0, 4);
+  const number = new Intl.NumberFormat(currentLang === 'bn' ? 'bn-BD' : 'en', { maximumFractionDigits: 1 });
+  const closed = roads.filter(road => currentSimulationHour >= road.hoursToCut).length;
+  const flooded = households.filter(home => currentSimulationHour >= home.hours).length;
+  const critical = households.filter(home => home.risk === 'CRITICAL').length;
+  const thresholdHour = 72 * (activeStation.dangerGauge - activeStation.currentGauge)
+    / (activeStation.severeGauge - activeStation.currentGauge + 0.5);
+  const bn = currentLang === 'bn';
+  document.getElementById('kpiAtRisk').textContent = number.format(100 * flooded / households.length) + '%';
+  document.getElementById('lblKpiAtRisk').textContent = bn ? 'এই সময়ে প্লাবিত নমুনা বাড়ি' : 'Sample homes flooded by this hour';
+  document.getElementById('kpiCritical').textContent = number.format(critical);
+  document.getElementById('kpiRoads').textContent = number.format(closed) + ' / ' + number.format(roads.length);
+  document.getElementById('kpiTimeToDanger').textContent = number.format(Math.max(0, thresholdHour - currentSimulationHour)) + (bn ? ' ঘণ্টা' : ' h');
+  document.getElementById('tagLocality').textContent = bn ? activeStation.localityName : activeStation.localityNameEn;
+  document.getElementById('tagRoadCount').textContent = number.format(roads.length) + (bn ? 'টি নমুনা সড়ক' : ' sample roads');
+  document.getElementById('tagAlertCount').textContent = number.format(alerts.length) + (bn ? 'টি নমুনা সতর্কতা' : ' sample alerts');
+
   const roadContainer = document.getElementById('roadsListContainer');
   roadContainer.innerHTML = activeStation.roads.map(r => {
     const isClosed = currentSimulationHour >= r.hoursToCut;
@@ -1078,8 +912,8 @@ function updateSidebarMetrics() {
     return `
       <div class="road-row">
         <div>
-          <div style="font-weight:600; color:#fff;">${(currentLang === 'bn') ? r.name : r.nameEn}</div>
-          <div style="font-size:11px; color:var(--text-dim);">${currentLang === 'bn' ? 'তলিয়ে যাওয়ার সময়:' : 'Submersion horizon:'} ${r.hoursToCut}h</div>
+          <div class="road-name">${(currentLang === 'bn') ? r.name : r.nameEn}</div>
+          <div class="road-horizon">${currentLang === 'bn' ? 'তলিয়ে যাওয়ার সময়:' : 'Submersion horizon:'} ${r.hoursToCut}h</div>
         </div>
         <span class="road-status-pill ${pillClass}">${pillText}</span>
       </div>
@@ -1088,15 +922,15 @@ function updateSidebarMetrics() {
 
   // Alerts list
   const alertContainer = document.getElementById('alertsContainer');
-  alertContainer.innerHTML = activeStation.households.slice(0, 4).map(h => {
-    const isCritical = h.hours <= 2;
-    const msgBn = `এখনই নিরাপদ স্থানে যান: আনুমানিক ${h.hours} ঘণ্টার মধ্যে এখানে পানি উঠবে (${h.risk} ঝুঁকি)। চর বন্দর আশ্রয়কেন্দ্রে জরুরি ওষুধ ও কাগজপত্র সহ দ্রুত রওনা হন।`;
-    const msgEn = `Move now: flooding predicted here in approx ${h.hours} hour(s) (${h.risk} risk). Evacuate to shelter with medicines and vital documents immediately.`;
+  alertContainer.innerHTML = alerts.map(h => {
+    const shelter = activeStation.shelters.find(s => s.id === h.shelter);
+    const msgBn = `সিমুলেশনে ${formatNumber(h.hours)} ঘণ্টায় বাড়িটি প্লাবিত হয়। নমুনা আশ্রয়কেন্দ্র: ${shelter.name}। ওষুধ ও প্রয়োজনীয় কাগজপত্র সঙ্গে রাখুন।`;
+    const msgEn = `This home floods at hour ${formatNumber(h.hours)} in the simulation. Sample shelter: ${shelter.nameEn}. Bring essential medicine and documents.`;
     return `
-      <div class="alert-card ${isCritical ? 'CRITICAL' : 'HIGH'}">
+      <div class="alert-card">
         <div class="alert-card-head">
           <span>${(currentLang === 'bn') ? h.name : h.nameEn}</span>
-          <span style="color:${isCritical ? 'var(--bd-red-light)' : 'var(--bd-amber)'};">${h.risk}</span>
+          <span class="risk-label" data-risk="${h.risk}">${riskLabel(h.risk)}</span>
         </div>
         <div>${(currentLang === 'bn') ? msgBn : msgEn}</div>
       </div>
@@ -1120,8 +954,8 @@ function quickSelect(id) {
   } else if (id.startsWith('S')) {
     const s = activeStation.shelters.find(x => x.id === id);
     if (s) {
-      map.panTo(s.coords);
-      L.popup().setLatLng(s.coords).setContent(`<b>🏫 ${s.name}</b>`).openOn(map);
+      map.panTo(s.coords, { animate: !matchMedia('(prefers-reduced-motion: reduce)').matches });
+      L.popup().setLatLng(s.coords).setContent(`<b>${currentLang === 'bn' ? s.name : s.nameEn}</b>`).openOn(map);
     }
   }
 }
@@ -1138,9 +972,11 @@ function toggleVoiceAlert() {
       return;
     }
 
+    const home = selectedHousehold;
+    const shelter = activeStation.shelters.find(s => s.id === home.shelter);
     const textToSpeak = (currentLang === 'bn')
-      ? "জরুরি বন্যা সতর্কবার্তা! সুনামগঞ্জ পয়েন্টে সুরমা নদীর পানি বিপদসীমা অতিক্রম করেছে। চর বন্দর ও পার্শ্ববর্তী নিম্নাঞ্চলের সকল পরিবারকে অবিলম্বে প্রয়োজনীয় ওষুধপত্র, জরুরি দলিল ও গবাদিপশু সহ নিকটস্থ সরকারি প্রাথমিক বিদ্যালয় আশ্রয়কেন্দ্রে যাওয়ার নির্দেশ দেওয়া হচ্ছে।"
-      : "Emergency Flood Alert! Water level at Sunamganj gauge has breached danger stage. All residents of Char Bandar are instructed to evacuate immediately to the nearest primary school shelter with medicines and documents.";
+      ? `এটি একটি নমুনা বন্যা সতর্কতা। ${home.name} এর জন্য সিমুলেশনে ${home.hours} ঘণ্টায় প্লাবন দেখানো হয়েছে। নমুনা আশ্রয়কেন্দ্র: ${shelter.name}।`
+      : `This is a sample flood alert. The simulation shows flooding at ${home.nameEn} in ${home.hours} hours. Sample shelter: ${shelter.nameEn}.`;
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = (currentLang === 'bn') ? 'bn-BD' : 'en-US';
@@ -1149,7 +985,7 @@ function toggleVoiceAlert() {
     document.getElementById('sirenBtn').classList.add('playing');
     document.getElementById('sirenText').textContent = I18N[currentLang].sirenStop;
 
-    utterance.onend = () => {
+    utterance.onend = utterance.onerror = () => {
       document.getElementById('sirenBtn').classList.remove('playing');
       document.getElementById('sirenText').textContent = I18N[currentLang].sirenText;
     };
@@ -1167,15 +1003,41 @@ function toggleLanguage() {
   currentLang = (currentLang === 'bn') ? 'en' : 'bn';
   const dict = I18N[currentLang];
 
-  document.getElementById('govMinistry').textContent = dict.govMinistry;
-  document.getElementById('govNetworkStatus').textContent = dict.govNetworkStatus;
+  document.documentElement.lang = currentLang;
+  for (const id of ['demoBadge', 'demoNotice', 'demoUse', 'mapHeading', 'legRoute']) {
+    document.getElementById(id).textContent = dict[id];
+  }
   document.getElementById('headerTagline').textContent = dict.headerTagline;
   document.getElementById('lblStation').textContent = dict.lblStation;
   document.getElementById('lblGaugeStatus').textContent = dict.lblGaugeStatus;
-  document.getElementById('txtDangerMark').textContent = dict.txtDangerMark;
   document.getElementById('sirenText').textContent = dict.sirenText;
   document.getElementById('langSwitchText').textContent = dict.langSwitchText;
+  const bn = currentLang === 'bn';
   document.getElementById('searchInput').placeholder = dict.searchPlaceholder;
+  for (const option of document.getElementById('stationSelect').options) {
+    const station = STATIONS[option.value];
+    option.textContent = bn ? station.name : station.nameEn;
+  }
+  for (const [index, tick] of [...document.getElementById('timelineTicks').children].entries()) {
+    tick.textContent = formatNumber(index * 24);
+  }
+  const checklist = bn ? [
+    'শিশু, প্রবীণ ও জরুরি ওষুধ আগে সরিয়ে নিন।',
+    'সড়কের অবস্থা নিচের তালিকায় দেখুন।',
+    'ফসল ও গবাদিপশু উঁচু স্থানে রাখুন।'
+  ] : [
+    'Help children and older adults first and bring essential medicine.',
+    'Check the road conditions below.',
+    'Move livestock and supplies to higher ground.'
+  ];
+  document.getElementById('spActionList').querySelectorAll('li').forEach((item, index) => {
+    item.textContent = checklist[index];
+  });
+  document.getElementById('searchInput').setAttribute('aria-label', bn ? 'নমুনা বাড়ি খুঁজুন' : 'Find a sample home');
+  document.getElementById('hourSlider').setAttribute('aria-label', bn ? 'সিমুলেশনের ঘণ্টা' : 'Simulation hour');
+  document.getElementById('btnPlay').setAttribute('aria-label', bn ? 'সিমুলেশন চালান বা থামান' : 'Play or pause simulation');
+  document.getElementById('quickHome').textContent = bn ? 'নমুনা বাড়ি' : 'Sample home';
+  document.getElementById('quickShelter').textContent = bn ? 'নমুনা আশ্রয়কেন্দ্র' : 'Sample shelter';
   document.getElementById('legShelter').textContent = dict.legShelter;
   document.getElementById('legCritical').textContent = dict.legCritical;
   document.getElementById('legWater').textContent = dict.legWater;
@@ -1191,19 +1053,68 @@ function toggleLanguage() {
   document.getElementById('titleRoads').textContent = dict.titleRoads;
   document.getElementById('titleAlerts').textContent = dict.titleAlerts;
 
-  renderStationMapElements();
-  updateSidebarMetrics();
+  onHourSliderChange(currentSimulationHour);
+  updateApiStatus();
 }
 
-function openApiConfig() {
-  const url = prompt(currentLang === 'bn' ? 'রেণ্ডার বা ব্যাকএন্ড এপিআই ইউআরএল প্রদান করুন:' : 'Enter Render or Custom Backend API URL:', 'https://floodlens-api-vq31.onrender.com');
-  if (url) alert(currentLang === 'bn' ? `ব্যাকএন্ড ইউআরএল সংরক্ষিত হয়েছে: ${url}` : `Backend URL saved: ${url}`);
+const apiMessages = {
+  bn: {
+    title: 'মডেলের নমুনা ফলাফল',
+    button: 'API মডেল চালান',
+    loading: 'মডেলের ফলাফল আনা হচ্ছে…',
+    unavailable: 'API এখন সাড়া দিচ্ছে না। মানচিত্রের ডেমো চালু আছে।',
+    result: (total, critical) => 'API মডেল: ' + total + 'টি নমুনা ভবন, ' + critical + 'টি গুরুতর ঝুঁকিতে।'
+  },
+  en: {
+    title: 'Backend model preview',
+    button: 'Run API model',
+    loading: 'Loading model results…',
+    unavailable: 'The API is unavailable. The map demo is still interactive.',
+    result: (total, critical) => 'API model: ' + total + ' sample buildings, ' + critical + ' at critical risk.'
+  }
+};
+let apiState = 'idle';
+let apiSummary;
+
+function updateApiStatus() {
+  const copy = apiMessages[currentLang];
+  const button = document.getElementById('apiCheck');
+  document.getElementById('apiTitle').textContent = copy.title;
+  button.textContent = copy.button;
+  button.disabled = apiState === 'loading';
+  const numbers = new Intl.NumberFormat(currentLang === 'bn' ? 'bn-BD' : 'en');
+  document.getElementById('apiStatus').textContent = apiState === 'ready'
+    ? copy.result(numbers.format(apiSummary.total_buildings), numbers.format(apiSummary.buildings_critical_lt_10h))
+    : copy[apiState] ?? '';
 }
 
-// Bootstrap on load
+async function checkApiModel() {
+  apiState = 'loading';
+  updateApiStatus();
+  try {
+    const url = document.getElementById('apiDocs').href;
+    const response = await fetch(new URL('/predict', url), { signal: AbortSignal.timeout(65000) });
+    if (!response.ok) throw new Error('Prediction request failed');
+    const { impact_summary: summary } = await response.json();
+    if (!Number.isInteger(summary?.total_buildings)
+        || !Number.isInteger(summary?.buildings_critical_lt_10h)) {
+      throw new Error('Invalid prediction response');
+    }
+    apiSummary = summary;
+    apiState = 'ready';
+  } catch {
+    apiState = 'unavailable';
+  }
+  updateApiStatus();
+}
+
 window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('searchIcon').innerHTML = lineIcon('search');
+  document.getElementById('sirenIcon').innerHTML = lineIcon('audio');
+  document.getElementById('btnPlay').innerHTML = lineIcon('play');
   initMap();
-  updateSidebarMetrics();
+  onHourSliderChange(currentSimulationHour);
+  document.getElementById('apiCheck').addEventListener('click', checkApiModel);
 });
 </script>
 

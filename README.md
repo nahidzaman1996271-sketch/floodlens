@@ -6,7 +6,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.141-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Live Web App](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-success?style=for-the-badge&logo=githubpages&logoColor=white)](https://nahidzaman1996271-sketch.github.io/floodlens/)
 [![Render API](https://img.shields.io/badge/Render-Live%20API-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://floodlens-api-vq31.onrender.com/docs)
-[![Tests Passing](https://img.shields.io/badge/Pytest-30%2F30%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
+[![Tests Passing](https://img.shields.io/badge/Pytest-55%2F55%20Passing-brightgreen?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
 [![Claude API](https://img.shields.io/badge/Claude%20Sonnet%204.6-Grounded%20Alerts-7C3AED?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com/)
 [![Hackathon](https://img.shields.io/badge/CloudCamp%20Bangladesh-AI%20Builders%20Congress-FF4B4B?style=for-the-badge)](https://cloudcampbd.com/)
 [![License MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
@@ -187,25 +187,17 @@ The simulation below illustrates how FloodLens models the inundation wavefront a
 
 ---
 
-## 🖥️ Live Emergency Operations Platform
+## Interactive hackathon demo
 
-🌐 **Live Web Deployment**: **[https://nahidzaman1996271-sketch.github.io/floodlens/](https://nahidzaman1996271-sketch.github.io/floodlens/)**
+[Open FloodLens on GitHub Pages](https://nahidzaman1996271-sketch.github.io/floodlens/).
 
-FloodLens includes a production-grade, Bangladeshi-themed national flood monitoring and evacuation command center designed for the Ministry of Disaster Management, Union Disaster Management Committees (UDMC), and local frontline responders:
+The bilingual dashboard uses sample scenarios for Sunamganj, Kurigram, Sirajganj, and Sylhet. OpenStreetMap provides the basemap. Flood extents, station readings, road closures, household impacts, and shelter directions are illustrative. Follow official warnings for real emergencies.
 
-* **🗺️ Real-World Interactive Leaflet GIS Mapping**:
-  - Replaces raw grids with a full **Leaflet.js geospatial map** covering Bangladesh's high-risk river basins.
-  - Features real vector layers for the **Surma River channel**, animated flood inundation zones, and **evacuation road networks**.
-* **🏛️ Multi-Station Basins (FFWC Telemetry)**:
-  - Toggle between key flood monitoring stations: **Sunamganj (Surma River / Haor Basin)**, **Kurigram (Brahmaputra Basin)**, **Sirajganj (Jamuna Basin)**, and **Sylhet Sadar (Kushiyara Basin)**.
-* **📢 Emergency Bangla Audio Siren & Voice Warning**:
-  - Built-in emergency siren chime and **natural Bangla Speech Synthesis (TTS)** delivering verbal evacuation directives for rural non-literate populations.
-* **🏃 Dynamic Personal Survival Plan & Evacuation Routing**:
-  - Search or click any homestead to generate a tailored survival card with **submersion countdown**, **assigned safe shelter with elevation (+14.5m)**, and an active **routed evacuation path line**.
-* **🌐 100% Bilingual Interface (`[বাংলা | English]`)**:
-  - Instant one-click language toggle across all national warnings, gauges, road tables, and priority directives.
+1. Choose a station and play or scrub the 72-hour timeline to see how sample homes and roads are affected.
+2. Search for a household or click its map marker to see the sample impact, shelter, and direction. Use the voice control to hear the selected household's sample alert.
+3. Select **Run API model** to get the building and critical-risk counts from the separate, seeded Python model at `/predict`. The map remains interactive while the API starts or is unavailable.
 
----
+GitHub Pages hosts the static dashboard. Render hosts the optional API preview and Swagger docs. To preview dashboard changes locally, run `python -m http.server 8765` from the repository root and open [the local preview](http://localhost:8765/).
 
 ## ☁️ Live Cloud Backend on Render
 
@@ -258,7 +250,7 @@ python scripts/run_demo.py
 python -c "from floodlens.storage import duckdb_store as d; print(d.query(d.RISK_BREAKDOWN_SQL))"
 ```
 
-### 3. Run the Test Suite (30/30 Passing)
+### 3. Run the Test Suite
 
 Validate every stage of data generation, forecasting bounds, BFS flood-fill, and API contracts:
 
