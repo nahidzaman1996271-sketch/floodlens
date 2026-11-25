@@ -7,19 +7,21 @@
 
 ---
 
-## 1. STORY (~250–300 words)
+The [one-page ClimateSphere brief](CLIMATESPHERE_BRIEF.md) and [three-minute demo walkthrough](docs/JUDGING_DEMO.md) are ready for judging.
+
+## 1. STORY
 *(Copy-paste into CloudCamp portal "Story" section)*
 
 **The Problem:**  
 Bangladesh's flood early-warning systems tell communities an abstract river gauge number — "water level may rise" or "danger stage reached at 6.5 meters." That information is accurate for hydrologists, but completely useless for a family living in a rural haor or floodplain basin. At 2:00 AM, a household doesn't know whether they have 45 minutes or 12 hours before floodwaters enter their home, whether the village access road is already submerged, or where the nearest dry shelter actually is. The tragic result is warnings that are heard, but not acted upon until it is too late.
 
 **Our Approach:**  
-FloodLens transforms raw flood data into a street-level personal survival plan. Instead of "danger stage reached," each household or community health worker receives an actionable, plain-language instruction: *"Flooding predicted here in 6 hours. Village Access Road 1 is impassable. Sample shelter: Char Bandar Primary School Shelter (2.07 km away). Move medicine, documents, and livestock now."*
+FloodLens helps a union disaster volunteer turn a modeled flood scenario into a household plan. In the seed-42 prototype, sample household B0002 is first inundated at hour 1, Village Access Road 1 is modeled as unusable at hour 1, and Char Bandar Primary School Shelter is the nearest sample shelter, 2.07 km away in a straight line. A volunteer would verify the road and shelter before sending any real warning.
 
 We achieved this by uniting three distinct technologies:
 1. **Time-series forecasting** of the river’s rate-of-rise using Holt’s damped-trend exponential smoothing coupled with rainfall forecasts;
-2. **Hydrologically-connected 2D terrain propagation** using breadth-first search flood-fill over digital elevation models (DEM) to determine exact street-level inundation timing;
-3. **A grounded Claude LLM alert layer** that converts calculated hazard metrics into plain-language bilingual instructions (Bangla & English) without hallucinating numbers.
+2. **Hydrologically-connected 2D terrain propagation** using breadth-first search flood-fill over digital elevation models (DEM) to estimate the first sampled hour of inundation for each grid cell;
+3. **A grounded Claude LLM alert layer** that converts calculated hazard metrics into plain-language bilingual instructions (Bangla & English) using a prompt that constrains the response to supplied facts.
 
 **Status:**  
 The end-to-end prototype has 55 passing tests, a REST API, and an interactive dashboard that uses simulated station and household data. Live BWDB gauges and SRTM elevation data are potential future integrations.
@@ -33,8 +35,9 @@ The end-to-end prototype has 55 passing tests, a REST API, and an interactive da
 * **Live Cloud Backend API (Render)**: https://floodlens-api-vq31.onrender.com (FastAPI microservice with live endpoints `/predict`, `/alerts`, `/scenario/summary`).
 * **Live Interactive Swagger API Docs**: https://floodlens-api-vq31.onrender.com/docs
 * **GitHub Repository**: https://github.com/nahidzaman1996271-sketch/floodlens (Full source code, 55 tests, assets, and an interactive simulation).
-* **Commit Code / Submission SHA**: Enter the SHA of the commit published for judging.
+* **Commit Code / Submission SHA**: After publishing the judging package, run `git rev-parse HEAD` and paste the full SHA into CloudCamp.
 * **Test Suite Verification**: 55/55 tests passing (`pytest tests/ -v`). Verifies forecast monotonicity, physical elevation sanity, shelter isolation on high ground, and API contracts.
+* **Reproducible synthetic evaluation**: 12 seeds, 1,170 building timings, 36 road timings, and 1,023 bilingual fallback alert pairs checked. These are software consistency checks. See the [evaluation report](docs/JUDGING_DEMO.md) and [recorded results](results/judging_evaluation.json).
 * **Concrete Impact Figures (from `results/prediction_export.json`)**:
   * Locality: Char Bandar Union (synthetic haor-floodplain profile, 60×60 elevation grid)
   * Current Gauge Level: 5.08 m | Danger Level: 6.5 m | Severe Level: 8.0 m
@@ -42,7 +45,7 @@ The end-to-end prototype has 55 passing tests, a REST API, and an interactive da
   * **Hours to Severe Threshold**: 13.0 hours
   * **Total Buildings Monitored**: 102
   * **Buildings at Risk**: 91 (89.2%)
-  * **Critical Category (< 10h submersion)**: 89 buildings
+  * **Critical Category (by hour 10)**: 89 buildings
   * **Road Infrastructure Impact**: 2 of 3 roads impassable within 1 hour; 1 main connector road remains passable for 13 hours.
 * **Visual Artifacts Attached**:
   * `assets/hero_mockup.png` — Mobile survival plan UI showing shelter routing and prioritized evacuation.
@@ -57,9 +60,9 @@ The end-to-end prototype has 55 passing tests, a REST API, and an interactive da
 
 * **Constrained LLM Agent (`floodlens/alerts/claude_alert.py`)**:
   * We engineered a strictly bounded system prompt with Anthropic's Claude Sonnet 4.6 (`claude-sonnet-4-6`).
-  * The prompt enforces zero hallucination: the model is prohibited from inventing distances, timings, or coordinates. It strictly phrases pre-computed numerical outputs into urgent, empathetic, human instructions.
+  * The prompt asks the model to keep the supplied distances, timings, and names while drafting a Bangla and English alert. The recorded evaluation checks the offline template. Language-model output needs review.
 * **Fail-Safe Reliability Design**:
-  * In disaster response, an API outage must not silence warnings. We designed a deterministic local template fallback that triggers automatically if network connection or API limits drop.
+  * If a configured model backend fails, the pipeline can use a deterministic bilingual template for the draft alert.
 * **AI-Assisted Architecture**:
   * The water-level forecasting module adapts a time-to-failure modeling pattern originally proven in enterprise GPU cluster telemetry, demonstrating cross-domain AI-native engineering.
 
@@ -69,7 +72,7 @@ The end-to-end prototype has 55 passing tests, a REST API, and an interactive da
 *(Copy-paste into CloudCamp portal "Data Lifecycle" section)*
 
 * **Current Prototype Phase**:
-  * Evaluated on hydrologically realistic synthetic profiles (`floodlens/data/synthetic.py`) calibrated to real Bangladesh Water Development Board (BWDB) monsoon gauge patterns and haor topography.
+  * The demo uses seeded, synthetic gauge readings, terrain and infrastructure inspired by haor floodplains. The preliminary UNOSAT map from June 2022 provides historical context. Validation against gauge observations and satellite masks remains future work. [UNOSAT map](https://unosat.org/static/unosat_filesystem/3303/UNOSAT_A3_Natural_Portrait_FL20220525BGD_Sylhet_Bangladesh_18Jun2022.pdf)
 * **Production Integration Roadmap**:
   1. **BWDB Real-Time Telemetry API**: Stream hourly sensor gauge readings across 100+ national river monitoring stations.
   2. **Copernicus & SRTM 30m Digital Elevation Models (DEM)**: Ingest satellite elevation rasters for Bangladesh's high-risk flood zones (Sylhet, Sunamganj, Kurigram, Sirajganj).
@@ -92,6 +95,7 @@ Rules:
 - Give concrete actions in priority order (move people first, then documents/medicine, then livestock/valuables).
 - Name the specific shelter and distance given.
 - No alarmist language beyond what the risk level warrants. CRITICAL = urgent and direct. WATCH = informative, no panic.
+- If "facts" (from the FloodLens knowledge graph) or "guidance" (retrieved from the FloodLens knowledge base) are provided, use them to choose and order the actions, and mention a road closure or an alternative shelter if the facts say so. Never copy numbers that are not given.
 - Output JSON format with two keys: "en" and "bn".
 ```
 
@@ -100,7 +104,7 @@ Rules:
 ---
 
 ## 6. VIDEO PITCH SCRIPT & YOUTUBE NOTES
-*(From `FloodLens_Final_Script.docx` & `youtube tricks.txt`)*
+Use the [three-minute judging walkthrough](docs/JUDGING_DEMO.md#three-minute-judge-walkthrough) to record or revise the pitch.
 
 * **Length**: ~3:00 minutes
 * **Speaker**: Nahid Ibn Zaman (with team Candy Crush: Farhan Ishraq Ifti, Tahmid Rashid Pranjol, Mahmuda Khanum)
@@ -109,5 +113,5 @@ Rules:
   * `[0:08 - 0:35]` The Problem: Bangladesh monsoon flood warnings lack street-level action.
   * `[0:35 - 1:05]` The Solution: Turning raw flood data into personal survival plans.
   * `[1:05 - 2:05]` Demo & Flow: Multi-model architecture, DEM flood propagation, Claude alert generation.
-  * `[2:05 - 2:45]` Impact: Piloting with local disaster management offices.
+  * `[2:05 - 2:45]` Impact: Synthetic checks and a proposed one-union pilot.
   * `[2:45 - 3:00]` Sign-off: Link to GitHub repo, slide deck, and live monitor.

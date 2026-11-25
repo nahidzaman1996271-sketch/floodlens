@@ -1,0 +1,139 @@
+{
+  "scope": "Synthetic consistency and deterministic fallback checks",
+  "seeds": [
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53
+  ],
+  "totals": {
+    "buildings": 1170,
+    "roads": 36,
+    "bilingual_alerts": 1023
+  },
+  "runs": {
+    "42": {
+      "buildings": 102,
+      "roads": 3,
+      "bilingual_alerts": 89
+    },
+    "43": {
+      "buildings": 112,
+      "roads": 3,
+      "bilingual_alerts": 96
+    },
+    "44": {
+      "buildings": 88,
+      "roads": 3,
+      "bilingual_alerts": 76
+    },
+    "45": {
+      "buildings": 98,
+      "roads": 3,
+      "bilingual_alerts": 85
+    },
+    "46": {
+      "buildings": 102,
+      "roads": 3,
+      "bilingual_alerts": 90
+    },
+    "47": {
+      "buildings": 91,
+      "roads": 3,
+      "bilingual_alerts": 80
+    },
+    "48": {
+      "buildings": 93,
+      "roads": 3,
+      "bilingual_alerts": 82
+    },
+    "49": {
+      "buildings": 96,
+      "roads": 3,
+      "bilingual_alerts": 85
+    },
+    "50": {
+      "buildings": 90,
+      "roads": 3,
+      "bilingual_alerts": 78
+    },
+    "51": {
+      "buildings": 111,
+      "roads": 3,
+      "bilingual_alerts": 100
+    },
+    "52": {
+      "buildings": 92,
+      "roads": 3,
+      "bilingual_alerts": 80
+    },
+    "53": {
+      "buildings": 95,
+      "roads": 3,
+      "bilingual_alerts": 82
+    }
+  },
+  "demo_case": {
+    "seed": 42,
+    "forecast_hours": 72,
+    "impact": {
+      "total_buildings": 102,
+      "buildings_at_risk": 91,
+      "buildings_at_risk_pct": 89.2,
+      "buildings_critical_lt_10h": 89,
+      "medical_facilities_at_risk": 1,
+      "roads_inaccessible": 2,
+      "roads_at_risk": 1,
+      "total_roads": 3
+    },
+    "home": {
+      "id": "B0002",
+      "type": "household",
+      "row": 1,
+      "col": 6,
+      "elevation_m": 0.97,
+      "hours_to_flood": 1,
+      "risk_level": "CRITICAL",
+      "nearest_shelter_id": "S1",
+      "nearest_shelter_name": "Char Bandar Primary School Shelter",
+      "distance_to_shelter_km": 2.07,
+      "priority": "standard"
+    },
+    "roads": [
+      {
+        "id": "R1",
+        "name": "Village Access Road 1",
+        "hours_to_inaccessible": 1,
+        "status": "INACCESSIBLE"
+      },
+      {
+        "id": "R2",
+        "name": "Village Access Road 2",
+        "hours_to_inaccessible": 1,
+        "status": "INACCESSIBLE"
+      },
+      {
+        "id": "R3",
+        "name": "Upazila Connector Road (high ground)",
+        "hours_to_inaccessible": 13,
+        "status": "AT_RISK"
+      }
+    ],
+    "template_alert": {
+      "building_id": "B0002",
+      "risk_level": "CRITICAL",
+      "message": "Move now: flooding predicted here in approximately 1 hours (CRITICAL risk). Nearest shelter: Char Bandar Primary School Shelter (2.07 km away). Take essential documents, medicine, and water. Move livestock to higher ground if time allows.",
+      "source": "template_fallback",
+      "message_bn": "এখনই নিরাপদ স্থানে যান: আনুমানিক 1 ঘণ্টার মধ্যে এখানে পানি প্রবেশ করবে (CRITICAL ঝুঁকি)। নিকটতম আশ্রয়কেন্দ্র: Char Bandar Primary School Shelter (2.07 কিমি দূরে)। জরুরি কাগজপত্র, ওষুধ ও বিশুদ্ধ পানি সাথে নিন। সময় থাকলে গবাদিপশু উঁচু স্থানে সরিয়ে নিন।",
+      "rag_sources": []
+    }
+  }
+}

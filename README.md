@@ -11,9 +11,9 @@
 [![Hackathon](https://img.shields.io/badge/CloudCamp%20Bangladesh-AI%20Builders%20Congress-FF4B4B?style=for-the-badge)](https://cloudcampbd.com/)
 [![License MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-**Team Candy Crush · International AI Builders Congress · "Idea to Unicorn" Track**
+**Team Candy Crush · International AI Builders Congress · Idea to Unicorn · ClimateSphere**
 
-*Hyper-local, street-level flood impact forecasting and plain-language survival instructions for Bangladesh.*
+*A bilingual flood-impact and shelter-planning prototype for Bangladesh.*
 
 👉 **[Launch Interactive Web Platform](https://nahidzaman1996271-sketch.github.io/floodlens/)** · 📡 **[Explore Live Render API Docs](https://floodlens-api-vq31.onrender.com/docs)**
 
@@ -23,20 +23,16 @@
 
 <div align="center">
   <img src="assets/hero_mockup.png" alt="FloodLens Mobile App Survival Plan Mockup" width="480"/>
-  <p><em>FloodLens Mobile Experience: Hyper-local timing, nearest safe shelter routing, and prioritized survival instructions.</em></p>
+  <p><em>FloodLens mobile concept showing modeled flood timing, a sample shelter, and a household alert.</em></p>
 </div>
 
 ---
 
 ## 📌 Executive Summary
 
-Current flood early-warning systems in Bangladesh tell communities:
-> *"River water level: 6.50m (Danger Stage reached)."*
+FloodLens helps a union disaster volunteer turn a rising river gauge into a household-specific draft plan. The prototype estimates when a building or road first floods, shows the nearest sample shelter by straight-line distance, and drafts a short alert in Bangla and English.
 
-That reading is useful to hydrologists in Dhaka. It is **useless** to a rural family in a Sylhet or Kurigram haor basin trying to decide at 2:00 AM whether to wake their children, unlash their livestock, and evacuate on foot.
-
-**FloodLens bridges the "last mile" gap between detection and survival action.** Instead of abstract water levels, FloodLens computes:
-> **"Flooding predicted at your home in 6 hours (CRITICAL risk). Village Access Road 1 is already underwater. Take your medicine and essential documents, and evacuate along the Upazila Connector Road to Char Bandar Primary School Shelter (2.07 km away) now."**
+Try **Sunamganj → B0002 → hour 0 to hour 1**. The sample home and access roads change state, and the household panel shows the sample shelter and plays a Bangla audio alert. The case uses synthetic flood and household data. The [ClimateSphere judging brief](CLIMATESPHERE_BRIEF.md) explains how it relates to the documented June 2022 Sunamganj flood.
 
 ---
 
@@ -69,13 +65,13 @@ Bangladesh is one of the most flood-vulnerable countries on Earth. Every monsoon
 
 ## 💡 What FloodLens Delivers: A Personal Survival Plan
 
-FloodLens ingests hydrological sensor streams, precipitation forecasts, and terrain elevation grids to generate household-specific survival guidance:
+The prototype combines seeded gauge levels, rainfall inputs, and an elevation grid to produce the following.
 
-* **⏱️ Precise Submersion Countdowns**: Real-time projected time-to-flood calculated per building footprint.
-* **🛣️ Road Passability Status**: Computes which egress routes remain passable and when they will become inaccessible.
-* **📍 Safe Shelter Routing**: Assigns each household to the nearest verified high-ground shelter with distance metrics.
-* **🤖 Grounded Claude AI Guidance**: A strictly constrained system prompt produces plain-language alerts (in Bangla and English) that **never hallucinate numbers** and prioritize life-saving essentials (medicine, children, documents, livestock).
-* **🖥️ Live Operations Monitor**: A unified dashboard for Union Disaster Management Committees (UDMC) and dispatch teams.
+- **Building impacts** with the first sampled hour of inundation and a risk tier.
+- **Road impacts** with the first modeled inundation along each sample road.
+- **Shelter context** with the nearest sample shelter and straight-line distance.
+- **Bilingual draft alerts** from structured model facts, with an offline template available.
+- **An interactive map** with sample stations, a 72-hour timeline, and Bangladesh location search. Places outside the sample scenarios open in map-only mode.
 
 ---
 
@@ -148,7 +144,7 @@ flowchart TD
 
 4. **Reliable LLM Alert Generation (`floodlens/alerts/claude_alert.py`)**:
    - Integrates Anthropic's Claude API with a strict system prompt that forbids inventing distances, timings, or names.
-   - Features an automatic offline template fallback ensuring the demo and disaster dispatch never fail due to network disconnection or missing API keys.
+   - Uses an offline template fallback when a configured generation backend is unavailable.
 
 ---
 
@@ -186,6 +182,18 @@ The simulation below illustrates how FloodLens models the inundation wavefront a
 </div>
 
 ---
+
+## ClimateSphere judging materials
+
+[One-page brief](CLIMATESPHERE_BRIEF.md) · [Three-minute walkthrough and pilot protocol](docs/JUDGING_DEMO.md) · [Reproducible evaluation results](results/judging_evaluation.json)
+
+Across **12 synthetic scenarios**, building and road timings matched the sampled grids for **1,170 buildings** and **36 roads**. Both versions of all **1,023 bilingual fallback alert pairs** contained the expected hour, shelter name, and distance. The UNOSAT assessment provides historical context. Field forecast accuracy and pilot comprehension remain open.
+
+Run the offline evaluation from the repository root:
+
+```powershell
+python -m scripts.evaluate_judging_case
+```
 
 ## Interactive hackathon demo
 
@@ -252,40 +260,12 @@ python scripts/run_demo.py
 python -c "from floodlens.storage import duckdb_store as d; print(d.query(d.RISK_BREAKDOWN_SQL))"
 ```
 
-### 3. Run the Test Suite
+### 3. Run the test suite
 
-Validate every stage of data generation, forecasting bounds, BFS flood-fill, and API contracts:
+The latest local run passed **55 tests**, covering the forecast pipeline, API contracts, fallback alerts, retrieval, storage, workflows, and MCP tools.
 
-```bash
-pytest tests/ -v
-```
-
-```
-tests/test_pipeline.py::test_scenario_shapes PASSED                       [  4%]
-tests/test_pipeline.py::test_scenario_reproducible PASSED                 [  8%]
-tests/test_pipeline.py::test_dem_elevation_range_sane PASSED              [ 12%]
-tests/test_pipeline.py::test_shelters_on_high_ground PASSED               [ 16%]
-tests/test_pipeline.py::test_forecast_output_shape PASSED                 [ 20%]
-tests/test_pipeline.py::test_forecast_is_bounded PASSED                   [ 25%]
-tests/test_pipeline.py::test_forecast_nondecreasing_ish PASSED            [ 29%]
-tests/test_pipeline.py::test_hours_to_threshold_ordering PASSED           [ 33%]
-tests/test_pipeline.py::test_confidence_band_positive PASSED              [ 37%]
-tests/test_pipeline.py::test_flood_extent_grows_with_level PASSED         [ 41%]
-tests/test_pipeline.py::test_flood_extent_includes_river PASSED           [ 45%]
-tests/test_pipeline.py::test_flood_timeline_monotonic_extent PASSED       [ 50%]
-tests/test_pipeline.py::test_high_ground_never_fully_submerged PASSED     [ 54%]
-tests/test_pipeline.py::test_building_impacts_cover_all_buildings PASSED  [ 58%]
-tests/test_pipeline.py::test_building_impact_risk_levels_valid PASSED     [ 62%]
-tests/test_pipeline.py::test_shelters_never_marked_critical_for_themselves PASSED [ 66%]
-tests/test_pipeline.py::test_road_impacts_cover_all_roads PASSED          [ 70%]
-tests/test_pipeline.py::test_road_status_valid PASSED                     [ 75%]
-tests/test_pipeline.py::test_summary_counts_consistent PASSED             [ 79%]
-tests/test_pipeline.py::test_alert_template_fallback_used_without_api_key PASSED [ 83%]
-tests/test_pipeline.py::test_alert_mentions_shelter_when_at_risk PASSED   [ 87%]
-tests/test_pipeline.py::test_generate_alerts_for_critical_respects_limit PASSED  [ 91%]
-tests/test_pipeline.py::test_safe_building_message_no_crash PASSED        [ 95%]
-tests/test_pipeline.py::test_api_end_to_end PASSED                        [100%]
-============================== 24 passed in 10.5s ==============================
+```powershell
+python -m pytest -q
 ```
 
 ### 4. Start the FastAPI Microservice
@@ -521,8 +501,8 @@ floodlens/
 
 | Milestone | Status | Details |
 |---|---|---|
-| **Synthetic Hydrological Prototype** | ✅ **Complete** | Calibrated haor-profile DEM, gauge dynamics, BFS propagation, Claude alert layer |
-| **Comprehensive Test Suite** | ✅ **Complete** | 30 unit/integration tests verifying physical guardrails, API contracts, MCP tools, and edge cases |
+| **Synthetic Hydrological Prototype** | ✅ **Complete** | Seeded haor-style terrain, gauge and rainfall inputs, BFS flood propagation, and bilingual alert drafting |
+| **Automated Evaluation** | ✅ **Complete** | 55 passing tests and a separate reproducible synthetic judging evaluation |
 | **Real DEM Integration** | 🔄 **Next Phase** | Ingest 30m open SRTM & Copernicus Digital Elevation Data for target Upazilas |
 | **Live BWDB API Feed** | 🔄 **Next Phase** | Direct webhook connection to Bangladesh Water Development Board real-time river telemetry |
 | **OpenStreetMap Alignment** | 🔄 **Next Phase** | Real building polygons and official road network geometries from OSM Bangladesh |
@@ -534,8 +514,12 @@ floodlens/
 
 For hackathon judges and contest evaluators reviewing commit timestamps, code progression, and originality:
 
-| Commit Hash | Timestamp (BST) | Scope / Conventional Commit Message | Direct GitHub Diff |
+| Commit Hash | Timestamp (Asia/Dhaka) | Scope / Conventional Commit Message | Direct GitHub Diff |
 |:---:|:---:|:---|:---:|
+| [`9eb3223`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/9eb3223) | 2026-11-26 00:04:40 | Added bilingual Bangladesh location search and map-only browsing | [View Diff](https://github.com/nahidzaman1996271-sketch/floodlens/commit/9eb3223) |
+| [`9c40775`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/9c40775) | 2026-11-25 23:56:26 | Redesigned the demo, repaired the basemap, and connected the Render model preview | [View Diff](https://github.com/nahidzaman1996271-sketch/floodlens/commit/9c40775) |
+| [`23afd2e`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/23afd2e) | 2026-11-13 15:32:15 | Recorded an end-to-end demo using local Ollama alerts and RAG | [View Diff](https://github.com/nahidzaman1996271-sketch/floodlens/commit/23afd2e) |
+| [`76401fd`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/76401fd) | 2026-11-13 10:29:36 | Added retrieval, Graph RAG, local model comparisons, and CI | [View Diff](https://github.com/nahidzaman1996271-sketch/floodlens/commit/76401fd) |
 | [`4bc27e2`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/4bc27e2) | 2026-10-21 23:47:48 | `docs`: Add comprehensive git commit audit table and submission SHA proof | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/4bc27e2) |
 | [`f23be2c`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/f23be2c) | 2026-10-21 22:29:13 | `feat`: Integrate live Render API backend URL into web app & docs | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/f23be2c) |
 | [`e3c8110`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/e3c8110) | 2026-10-21 22:10:50 | `feat`: Overhaul with authentic Bangladeshi emergency theme, Leaflet GIS mapping, voice alerts, Render config | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/e3c8110) |
@@ -545,7 +529,7 @@ For hackathon judges and contest evaluators reviewing commit timestamps, code pr
 | [`7c104c0`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/7c104c0) | 2026-10-21 21:40:00 | `feat`: Add bilingual Bangla-English localization to alerts and dashboard | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/7c104c0) |
 | [`4f9d10f`](https://github.com/nahidzaman1996271-sketch/floodlens/commit/4f9d10f) | 2026-10-21 21:33:01 | `feat`: Initial commit for FloodLens - CloudCamp Bangladesh Hackathon | [View Diff ↗](https://github.com/nahidzaman1996271-sketch/floodlens/commit/4f9d10f) |
 
-*Full submission repository head SHA:* `f23be2c476f14594ee961f01854d2083b4b1a760`
+Use the full SHA of the revision that contains the judging package in CloudCamp’s **Commit Code / Submission SHA** field. Run `git rev-parse HEAD` after publishing that revision. The [GitHub history for main](https://github.com/nahidzaman1996271-sketch/floodlens/commits/main/) shows the current published revision.
 
 ---
 
